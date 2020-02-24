@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack"
+    "build": "webpack",
+    "serve": "./node_modules/.bin/serve ./dist",
+    "build-js": "./node_modules/.bin/rollup -c",
+    "build-css": "./node_modules/.bin/node-sass scss/app.scss ./dist/mirezplayer.css"
   },
   "repository": {
     "type": "git",
@@ -20,9 +23,15 @@
   "devDependencies": {
     "babel-core": "^6.26.3",
     "babel-loader": "^8.0.6",
+    "babel-minify": "^0.5.1",
     "babel-preset-env": "^1.7.0",
+    "browserify": "^16.5.0",
+    "chokidar": "^3.3.1",
     "grunt": "^1.0.4",
-    "webpack": "^4.41.6",
-    "webpack-dev-server": "^3.10.3"
+    "node-sass": "^4.13.1",
+    "rollup": "^1.31.1",
+    "rollup-plugin-babel": "^4.3.3",
+    "rollup-watch": "^4.3.1",
+    "serve": "^11.3.0"
   }
 }
