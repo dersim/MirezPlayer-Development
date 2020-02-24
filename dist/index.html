@@ -4,8 +4,21 @@
     <meta charset="UTF-8">
     <title>MirezPlayer</title>
 </head>
-<body>
-<script src="mirezplayer.js"></script>
 
+<body>
+    <div class="mirez-player fixed-ratio ratio-16-9"
+    data-vast-preroll-adtag = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x360&iu=/4444/disp_kicker.de_video_sd/fullscreenspot&cust_params=keywords%3DTest&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&url=[referrer_url]&description_url=[description_url]&correlator=%%CACHEBUSTER%%">
+        <div class="contain">
+            <video width="320" height="240"
+            controls
+            muted>
+                <source
+                 src="https://s3-eu-west-1.amazonaws.com/im-tagmanagement-eu-west-1/live/__IMfiles/VideoWall/PreRoll_Neutral.mp4"
+                 type="video/mp4">
+            </video>
+        </div>
+    </div>
+
+    <script src="mirezplayer.js" onload="window.mirezplayer.Init()"></script>
 </body>
 </html>

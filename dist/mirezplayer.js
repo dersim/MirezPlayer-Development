@@ -3,18 +3,24 @@
     factory();
 }((function () { 'use strict';
 
-    const PlayerFramework = function () {
-      console.log("PlayerFramework");
-    };
+    const PlayerFramework$1 = function () {
+      console.log("PlayerFramework"); //new Object
 
-    const test = function () {
-      console.log("test lib");
+      const pub = {};
+
+      pub.Init = function () {
+        console.log("Init");
+        const player = document.querySelectorAll(".mirez-player");
+        const createPlayer = new PlayerFramework(player);
+        return createPlayer;
+      };
+
+      return pub;
     };
 
     (() => {
-      const playerFramework = "PlayerFramework";
-      window[playerFramework] = new PlayerFramework();
-      test();
+      const playerFramework = "mirezplayer";
+      window[playerFramework] = new PlayerFramework$1();
     })();
 
 })));
