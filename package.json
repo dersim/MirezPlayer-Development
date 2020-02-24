@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack"
   },
   "repository": {
     "type": "git",
@@ -17,6 +18,11 @@
   },
   "homepage": "https://github.com/dersim/MirezPlayer-Development#readme",
   "devDependencies": {
-    "grunt": "^1.0.4"
+    "babel-core": "^6.26.3",
+    "babel-loader": "^8.0.6",
+    "babel-preset-env": "^1.7.0",
+    "grunt": "^1.0.4",
+    "webpack": "^4.41.6",
+    "webpack-dev-server": "^3.10.3"
   }
 }
