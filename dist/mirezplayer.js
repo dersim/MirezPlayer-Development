@@ -3,16 +3,32 @@
     factory();
 }((function () { 'use strict';
 
-    const PlayerFramework$1 = function () {
-      console.log("PlayerFramework"); //new Object
+    const Videoplayer = function (domNode) {
+      console.log(domNode);
+
+      const __dataStore = {
+        el: domNode,
+        isPlayingAd: false,
+        vastPrerollTag: domNode.getAttribute("data-vast-preroll-adtag")
+      };
+      console.log(__dataStore.vastPrerollTag);
+    };
+
+    const PlayerFramework = function () {
+      console.log("PlayerFramework"); // new array object
 
       const pub = {};
+
+      pub.New = domNode => {
+        const p = new Videoplayer(domNode);
+
+        return p;
+      };
 
       pub.Init = function () {
         console.log("Init");
         const player = document.querySelectorAll(".mirez-player");
-        const createPlayer = new PlayerFramework(player);
-        return createPlayer;
+        pub.New(player[0]);
       };
 
       return pub;
@@ -20,7 +36,7 @@
 
     (() => {
       const playerFramework = "mirezplayer";
-      window[playerFramework] = new PlayerFramework$1();
+      window[playerFramework] = new PlayerFramework();
     })();
 
 })));
