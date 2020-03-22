@@ -1,30 +1,21 @@
-import Videoplayer from "./Videoplayer";
+import VASTPlayer from "./VASTPlayer";
 
 const PlayerFramework = function() {
-    console.log("PlayerFramework");
-
-    // new array object
-    const _videoplayers = [];
 
     //new Object
     const pub = {};
 
-    pub.New = domNode => {
-        const p = new Videoplayer(domNode);
-        if (p) {
-            _videoplayers.push(p);
-        }
-        return p;
-    };
+    pub.enableDebugMode = () => window.localStorage.setItem("MirezPlayerDebug", 1);
+    pub.disableDebugMode = ()=> window.localStorage.removeItem("MirezPlayerDebug");
+    pub.initVASTPlayer = function(){
+        const domNode = document.querySelector(".mirez-player");
+        const r = new VASTPlayer(domNode);
+        return r;
+    }
 
 
     pub.Init = function () {
-        console.log("Init");
-
-        let i = 0;
-        const player = document.querySelectorAll(".mirez-player");
-
-        pub.New(player[0]);
+        pub.initVASTPlayer();
     }
 
     return pub;

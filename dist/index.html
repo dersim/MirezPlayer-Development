@@ -6,19 +6,30 @@
 </head>
 
 <body>
+<link rel="stylesheet" href="mirezplayer.css">
+<section style="margin:0 auto; width: 776px; max-width: 100%">
     <div class="mirez-player fixed-ratio ratio-16-9"
-    data-vast-preroll-adtag = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x360&iu=/4444/disp_kicker.de_video_sd/fullscreenspot&cust_params=keywords%3DTest&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&url=[referrer_url]&description_url=[description_url]&correlator=%%CACHEBUSTER%%">
-        <div class="contain">
-            <video width="320" height="240"
-            controls
-            muted>
+         preroll-tag = "https://vast.mathtag.com/?id=5aW95q2jLzIxLyAvTkdabFl6VmtZekV0T0RCak5DMDBOekF3TFdFeE4yTXRaREkyTkdOalpXWTBNVGhoLzM0Mjg4NjYxMDc1NTUwMDYyMTMvNzUyNTk2Ny81NjYyMzY5LzI2LzY0X2ZWSUxJcTFlX2NtWVRjR1VpMHRKX2ZKZ3hMX0tyVkVQaGQ5UVVQcWsvMi8zOTQwNTkvMC8xMS8xMTg4NTMwLzE1MjIxNDUyNDMvMTg3OTg2Lzc0NzAyNy8yLzAvMC9OR1psWXpWa1l6RXRPREJqTkMwME56QXdMV0V4TjJNdFpESTJOR05qWldZME1UaGgvMC8wLzM5NDA1OS8wLzEvMzQyODg2NjEwNzU1NTAwNjIxMy9hbXMvMC84ODkxLzQ4LzUxLzgvOTAuMTg2LjIzLjAvMC4wMDAvMTU4NDMwMDU0OS8xNTg0MzE4NTQ5Lw/DFHK-P-M3ohjJsJPNc5ujPvSNoc&nodeid=702&group=eu&auctionid=3428866107555006213&exch=ads&sid=5662369&cid=7525967&price=27.80&bp=dd_aeaabe&nfy_act=LD5wfnw&act=LiIiJiQocHxrPSwuJCMqcHxrKy5wfGshIioqJCMqcHxrOiwkOQsiPwQgPQMiOSQrcH0&protocol_version=1&buyerCreativeId=7525967&cvid=11&aid=3428866107555006213&adverid=187986&site=t-online.de&cdsp=false&fraud=true&optout=0&lmt=0&oid=101463&cacheBuster=[TIMESTAMP]&skippable=2&cmp=747027&dealid=394059&sup_dealid=tsipq68cww&ua=Mozilla/5.0%20%2528Windows%20NT%2010.0%3B%20Win64%3B%20x64%2529%20AppleWebKit/537.36%20%2528KHTML%2C%20like%20Gecko%2529%20Chrome/80.0.3987.132%20Safari/537.36&uuid=4fec5dc1-80c4-4700-a17c-d264ccef418a&siteid=88592&pid=14876&ip=90.186.23.0&prot=https%3A%2F%2F&count=1&wo_lookup=087125d1-3450-4ec6-b160-427d1883cd6c">
+        <div class="mirez-conent">
+            <video
+                    muted="true">
                 <source
-                 src="https://s3-eu-west-1.amazonaws.com/im-tagmanagement-eu-west-1/live/__IMfiles/VideoWall/PreRoll_Neutral.mp4"
-                 type="video/mp4">
+                        src="https://s3-eu-west-1.amazonaws.com/im-tagmanagement-eu-west-1/live/__IMfiles/VideoWall/PreRoll_Neutral.mp4"
+                        type="video/mp4">
             </video>
+            <div class="mirez-loader hide">
+                <div class="mirez-animation"></div>
+            </div>
+            <div class="play-icon-area">
+                <div class="play-icon-container">
+                    <div class="play-icon-cell">
+                        <div class="play-icon"></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-
-    <script src="mirezplayer.js" onload="window.mirezplayer.Init()"></script>
+</section>
+<script src="mirezplayer.js" onload="window.mirezplayer.Init()"></script>
 </body>
 </html>
