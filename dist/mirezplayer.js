@@ -30,7 +30,7 @@
       }
 
       return {
-        startsWith
+        startsWith: startsWith
       };
     }
 
@@ -122,11 +122,19 @@
         c = colors[t];
       }
 
-      return (desc, ...logs) => {
+      return function (desc) {
+        for (var _len = arguments.length, logs = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+          logs[_key - 1] = arguments[_key];
+        }
+
         if (isIE11) {
-          window.console.log(desc, ...logs);
+          var _window$console;
+
+          (_window$console = window.console).log.apply(_window$console, [desc].concat(logs));
         } else {
-          window.console.log("%c" + desc, "color:" + c.fg + ";background:" + c.bg + ";", ...logs);
+          var _window$console2;
+
+          (_window$console2 = window.console).log.apply(_window$console2, ["%c" + desc, "color:" + c.fg + ";background:" + c.bg + ";"].concat(logs));
         }
       };
     };
@@ -140,7 +148,7 @@
       let eventName;
       let tmpEvent;
       if (trackingEventsNodes.length === 0) return events;
-      trackingEventsNodes.forEach(eventNode => {
+      trackingEventsNodes.forEach(function (eventNode) {
         eventName = eventNode.getAttribute("event");
         tmpEvent = {
           name: eventName,
@@ -211,7 +219,7 @@
       const _timeupdateEvents = [];
       const _cleanup = []; // for each tracking event
 
-      events.forEach(event => {
+      events.forEach(function (event) {
         // create a intermediate functions, so we can remove the event listeners right after firing it.
         const _OnStartEvent = function () {
           videoEl.removeEventListener("play", _OnStartEvent);
@@ -244,10 +252,10 @@
 
       videoEl.addEventListener("timeupdate", _timeupdateEventsTicker);
 
-      const _allClean = () => {
+      var _allClean = function _allClean() {
         videoEl.removeEventListener("timeupdate", _timeupdateEventsTicker);
 
-        _cleanup.forEach(clean => {
+        _cleanup.forEach( function (clean){
           videoEl.removeEventListener(clean.event, clean.func);
         });
 
@@ -261,7 +269,7 @@
       evt = evt || null;
 
       if (uel[n] && uel[n].length) {
-        uel[n].forEach(cb => {
+        uel[n].forEach(function(cb){
           cb(evt, player, n);
         });
       }
@@ -274,7 +282,7 @@
       const videoEl = player.getVideoEl();
       const uel = playerDataStore.userEventListeners;
 
-      events.forEach(event => {
+      events.forEach(function(event){
         const _OnStartEvent = function () {
           if (!player.isPlayingAd()) return;
           if (videoEl.currentTime > 1) return;
@@ -487,6 +495,7 @@
             } else {
               videoEl.src = mediaFile.src;
               opts.playerMethod.hideLoader();
+              opts.playerMethod.showPlayIcon();
             }
 
             opts.playerMethod.showAdIsPlaying("preroll");
@@ -539,8 +548,13 @@
 
       const __dataStore = {
         el: domNode,
-        loader: domNode.querySelector(".mirez-loader"),
         videoEl: domNode.querySelector("video"),
+        contentEl: domNode.querySelector(".mirez-conent"),
+        loader: domNode.querySelector(".mirez-loader"),
+        clickArea: domNode.querySelector(".play-icon-area"),
+        playIcon: domNode.querySelector(".play-icon-area"),
+        soundIcon: domNode.querySelector(".mirez-sound-area"),
+        soundAnimIcon: domNode.querySelectorAll(".mirez-sound-icon"),
         vastIsParsed: false,
         isFirstStart: true,
         isPlayingAd: false,
@@ -563,6 +577,14 @@
 
       this.getLoader = () => __dataStore.loader;
 
+      this.getPlayIcon = () => __dataStore.playIcon;
+
+      this.getClickArea = () => __dataStore.playIcon;
+
+      this.getSoundIcon = () => __dataStore.soundIcon;
+
+      this.getSoundAnimIcon = () => __dataStore.soundAnimIcon;
+
       this.getHeight = () => __dataStore.el.offsetHeight;
 
       this.getCurrentTime = () => Math.floor(__dataStore.videoEl.currentTime); // Setter
@@ -574,6 +596,18 @@
         this.getVideoEl().playbackRate = __dataStore.defaultPlaybackRateForAds;
         this.getVideoEl().defaultPlaybackRate = __dataStore.defaultPlaybackRateForAds;
         return this;
+      };
+
+      this.setAnimSound = () => {
+        this.getSoundAnimIcon()[0].classList.remove("none");
+        this.getSoundAnimIcon()[1].classList.remove("none");
+        this.getSoundAnimIcon()[2].classList.remove("none");
+      };
+
+      this.setAnimSoundNone = () => {
+        this.getSoundAnimIcon()[0].classList.add("none");
+        this.getSoundAnimIcon()[1].classList.add("none");
+        this.getSoundAnimIcon()[2].classList.add("none");
       }; // Is
 
 
@@ -581,32 +615,7 @@
 
       this.isPlayingAd = () => __dataStore.isPlayingAd;
 
-      this.isFirstStart = () => __dataStore.isFirstStart; // addEventListener
-
-
-      __self.getVideoEl().addEventListener("play", event => {
-        __dataStore.userEventListeners.play.forEach(cb => {
-          cb(event, __self, "play");
-        });
-
-        if (__self.isFirstStart() === true) {
-          __dataStore.userEventListeners.firstStart.forEach(cb => {
-            cb(event, __self, "firstStart");
-          });
-
-          console.log("FirstStart");
-        }
-
-        if (__self.isPlayingAd() !== false && __self.getCurrentTime() > 0) {
-          __dataStore.userEventListeners.contentVideoResume.forEach(cb => {
-            cb(event, __self, "contentVideoResume");
-          });
-
-          console.log("contentVideoResume");
-        }
-
-        __dataStore.isFirstStart = false;
-      }); // hide || show
+      this.isFirstStart = () => __dataStore.isFirstStart; // hide || show
 
 
       this.hideLoader = () => {
@@ -619,12 +628,94 @@
         this.getLoader().classList.add("show");
       };
 
+      this.hidePlayIcon = () => {
+        this.getPlayIcon().classList.remove("show");
+        this.getPlayIcon().classList.add("hide");
+      };
+
+      this.showPlayIcon = () => {
+        this.getPlayIcon().classList.remove("hide");
+        this.getPlayIcon().classList.add("show");
+      };
+
       this.showAdIsPlaying = type => {
         this.setDefaultPlaybackRateForAds();
         __dataStore.isPlayingAd = true;
         this.getEl().classList.add("playing-ad"); //this.getAdsRemainingTimeContainerEl().classList.remove("hidden");
 
         if (type) this.getEl().classList.add("ad-" + type);
+      };
+
+      this.hideSoundIcon = () => {
+        this.getSoundIcon().classList.remove("show");
+        this.getSoundIcon().classList.add("hide");
+      };
+
+      this.showSoundIcon = () => {
+        this.getSoundIcon().classList.remove("hide");
+        this.getSoundIcon().classList.add("show");
+      }; // addEventListener
+
+
+      __self.getVideoEl().addEventListener("play", evt => {
+        __dataStore.userEventListeners.play.forEach(cb => {
+          cb(evt, __self, "play");
+        });
+
+        if (__self.isFirstStart() === true) {
+          __dataStore.userEventListeners.firstStart.forEach(cb => {
+            cb(evt, __self, "firstStart");
+          });
+
+          console.log("FirstStart");
+        }
+
+        if (__self.isPlayingAd() !== false && __self.getCurrentTime() > 0) {
+          __dataStore.userEventListeners.contentVideoResume.forEach(cb => {
+            cb(evt, __self, "contentVideoResume");
+          });
+
+          console.log("contentVideoResume");
+        }
+
+        __dataStore.isFirstStart = false;
+      });
+
+      this.addEvent = function () {
+        const player = __dataStore.videoEl;
+        const playerContent = __dataStore.contentEl;
+        playerContent.addEventListener("click", evt => {
+          evt.preventDefault();
+          let target = evt.target;
+          const clicktarget = evt.target;
+
+          switch (clicktarget.getAttribute("data-clicktarget")) {
+            case "click-area":
+              break;
+
+            case "play-icon-cell":
+              this.hidePlayIcon();
+              player.play();
+              break;
+
+            case "play-icon":
+              this.hidePlayIcon();
+              this.showSoundIcon();
+              player.play();
+              break;
+
+            case "click-sound":
+              if (player.muted === true) {
+                player.muted = false;
+                this.setAnimSoundNone();
+              } else {
+                player.muted = true;
+                this.setAnimSound();
+              }
+
+              break;
+          }
+        });
       }; // Start Parsing VAST Tag
 
 
@@ -641,9 +732,12 @@
             });
           }
         }
-      };
+      }; //init
+
 
       __self.parsingVastTag();
+
+      __self.addEvent();
     };
 
     const PlayerFramework = function () {
@@ -662,6 +756,10 @@
 
       pub.Init = function () {
         pub.initVASTPlayer();
+      };
+
+      pub.Test = function () {
+        console.log("tesasdt");
       };
 
       return pub;

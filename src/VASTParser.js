@@ -214,11 +214,11 @@ function VASTParser(opts) {
                 } else {
                     videoEl.src = mediaFile.src;
                     opts.playerMethod.hideLoader();
+                    opts.playerMethod.showPlayIcon();
                 }
                 opts.playerMethod.showAdIsPlaying("preroll");
 
             }
-
             return;
         }
 

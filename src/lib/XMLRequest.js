@@ -3,7 +3,9 @@ function StringUtils(str) {
     function startsWith(needle) {
         return str.indexOf(needle) === 0;
     }
-    return { startsWith };
+    return {
+        startsWith: startsWith
+    };
 }
 
 function XMLRequest(url, cb, opts) {

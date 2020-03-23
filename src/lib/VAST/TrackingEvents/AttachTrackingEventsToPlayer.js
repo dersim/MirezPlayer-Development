@@ -11,7 +11,7 @@ const AttachTrackingEventsToPlayer = function(events, player) {
     const _timeupdateEvents = [];
     const _cleanup = [];
     // for each tracking event
-    events.forEach(event => {
+    events.forEach(function (event) {
         // create a intermediate functions, so we can remove the event listeners right after firing it.
         const _OnStartEvent = function() {
             videoEl.removeEventListener("play", _OnStartEvent);

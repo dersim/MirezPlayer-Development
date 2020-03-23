@@ -35,15 +35,20 @@ const Log = function(t) {
     } else {
         c = colors[t];
     }
-    return (desc, ...logs) => {
+
+    return function (desc) {
+        for (var _len = arguments.length, logs = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+            logs[_key - 1] = arguments[_key];
+        }
+
         if (isIE11) {
-            window.console.log(desc, ...logs);
+            var _window$console;
+
+            (_window$console = window.console).log.apply(_window$console, [desc].concat(logs));
         } else {
-            window.console.log(
-                "%c" + desc,
-                "color:" + c.fg + ";background:" + c.bg + ";",
-                ...logs
-            );
+            var _window$console2;
+
+            (_window$console2 = window.console).log.apply(_window$console2, ["%c" + desc, "color:" + c.fg + ";background:" + c.bg + ";"].concat(logs));
         }
     };
 };

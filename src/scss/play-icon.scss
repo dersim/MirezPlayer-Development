@@ -1,5 +1,13 @@
 $border-color: #fff;
 
+div.play-icon-area .hide{
+  display: none;
+}
+
+div.play-icon-area .show{
+  display: block;
+}
+
 div.play-icon-area{
   position: absolute;
   width: 100%;
@@ -21,6 +29,7 @@ div.play-icon-cell{
   display: table-cell;
   vertical-align: middle;
   text-align: center;
+  cursor: pointer;
 }
 
 div.play-icon {

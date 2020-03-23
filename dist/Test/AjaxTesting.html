@@ -30,7 +30,9 @@ function StringUtils(str) {
     function startsWith(needle) {
         return str.indexOf(needle) === 0;
     }
-    return { startsWith };
+    return {
+        startsWith: startsWith
+    };
 }
 function AjaxRequest(url, cb, opts) {
     console.log("2");

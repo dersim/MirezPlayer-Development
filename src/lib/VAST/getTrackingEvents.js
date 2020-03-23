@@ -5,7 +5,7 @@ const getTrackingEvents = function (trackingEventsNodes) {
     let eventName;
     let tmpEvent;
     if (trackingEventsNodes.length === 0) return events;
-    trackingEventsNodes.forEach(eventNode => {
+    trackingEventsNodes.forEach(function (eventNode) {
         eventName = eventNode.getAttribute("event");
         tmpEvent = {
             name: eventName,

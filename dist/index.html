@@ -14,17 +14,34 @@
             <video
                     muted="true">
                 <source
-                        src="https://s3-eu-west-1.amazonaws.com/im-tagmanagement-eu-west-1/live/__IMfiles/VideoWall/PreRoll_Neutral.mp4"
+                        src=""
                         type="video/mp4">
             </video>
             <div class="mirez-loader hide">
                 <div class="mirez-animation"></div>
             </div>
-            <div class="play-icon-area">
+            <div class="play-icon-area hide" data-clicktarget="click-area">
                 <div class="play-icon-container">
-                    <div class="play-icon-cell">
-                        <div class="play-icon"></div>
+                    <div class="play-icon-cell" data-clicktarget="play-icon-cell">
+                        <div class="play-icon" data-clicktarget="play-icon"></div>
                     </div>
+                </div>
+            </div>
+            <div class="mirez-sound-area hide" data-clicktarget="click-sound">
+                <div class="mirez-sound-container" data-clicktarget="click-sound">
+                    <table class="tb-sound" data-clicktarget="click-sound">
+                        <tr>
+                            <th>
+                                <div class="mirez-sound-icon above" data-clicktarget="click-sound"></div>
+                            </th>
+                            <th>
+                                <div class="mirez-sound-icon center" data-clicktarget="click-sound"></div>
+                            </th>
+                            <th>
+                                <div class="mirez-sound-icon below" data-clicktarget="click-sound"></div>
+                            </th>
+                        </tr>
+                    </table>
                 </div>
             </div>
         </div>
