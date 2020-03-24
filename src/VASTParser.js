@@ -1,7 +1,6 @@
 import replaceURLMacro from "./lib/utils/replaceURLMacro";
 import XMLRequest from "./lib/XMLRequest";
 import Log from "./lib/Log";
-import Noop from    "./lib/Noop";
 import getNodeValue from "./lib/VAST/getNodeValue";
 import getTrackingEvents from "./lib/VAST/getTrackingEvents";
 import AttachTrackingEventsToPlayer from "./lib/VAST/TrackingEvents/AttachTrackingEventsToPlayer";
@@ -118,8 +117,8 @@ function VASTParser(opts) {
 
         const xmlDoc = xml.documentElement;
         const wrapper = xmlDoc.querySelector("Wrapper");
-        let adVerifications = xmlDoc.querySelectorAll("AdVerifications Verification");
         const errorPixels = xmlDoc.querySelectorAll("Error");
+        let adVerifications = xmlDoc.querySelectorAll("AdVerifications Verification");
         const impression = xmlDoc.querySelectorAll("Impression");
         const impressions = xmlDoc.querySelectorAll("Impressions");
         const _ClickTrackings = xmlDoc.querySelectorAll("ClickTracking");
@@ -138,13 +137,18 @@ function VASTParser(opts) {
             errorCode = 303;
         }
 
+        console.log("Test");
+        console.log(errorPixels);
+
+
         // Push Error
         if(errorPixels && errorPixels.length){
-            errorPixels.forEach(errorPixel =>{
+            errorPixels.forEach(errorPixel => {
                 collectedItems.errors.push(errorPixel.textContent);
             });
             Log()("Mirez-Player", "VASTParser", "Error Pixel: ", collectedItems.errors);
         }
+
 
         // Push Impression
         if (impression && impression.length || impressions && impressions.length) {
@@ -156,7 +160,9 @@ function VASTParser(opts) {
             Log()("Mirez-Player", "VASTParser","Impression Pixel: ", collectedItems.impressions);
         }
 
+
         // Push Click Tacking
+
         if (_ClickTrackings) {
             _ClickTrackings.forEach(_ClickTracking => {
                 ClickTrackings.push(getNodeValue(_ClickTracking));

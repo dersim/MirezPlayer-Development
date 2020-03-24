@@ -3,24 +3,53 @@
     factory();
 }((function () { 'use strict';
 
-    const replaceURLMacro = function (url) {
+    // IE11 Polyfill .forEach
+    if ("NodeList" in window && !NodeList.prototype.forEach) {
+      NodeList.prototype.forEach = function (callback, thisArg) {
+        thisArg = thisArg || window;
+
+        for (var i = 0; i < this.length; i++) {
+          callback.call(thisArg, this[i], i, this);
+        }
+      };
+    }
+
+    var replaceURLMacro = function replaceURLMacro(url) {
       if (url.indexOf("[TIMESTAMP]") !== -1) {
-        const unix_timestamp = Date.now();
+        var unix_timestamp = Date.now();
         url = url.replace("[TIMESTAMP]", unix_timestamp);
       }
 
       if (url.indexOf("%%CACHEBUSTER%%") !== -1) {
-        const unix_timestamp = Date.now();
-        url = url.replace("%%CACHEBUSTER%%", unix_timestamp);
+        var _unix_timestamp = Date.now();
+
+        url = url.replace("%%CACHEBUSTER%%", _unix_timestamp);
       }
 
       if (url.indexOf("[CACHEBUSTER]") !== -1) {
-        const unix_timestamp = Date.now();
-        url = url.replace("[CACHEBUSTER]", unix_timestamp);
+        var _unix_timestamp2 = Date.now();
+
+        url = url.replace("[CACHEBUSTER]", _unix_timestamp2);
       }
 
       return url;
     };
+
+    function _typeof(obj) {
+      "@babel/helpers - typeof";
+
+      if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+        _typeof = function (obj) {
+          return typeof obj;
+        };
+      } else {
+        _typeof = function (obj) {
+          return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+        };
+      }
+
+      return _typeof(obj);
+    }
 
     function StringUtils(str) {
       str = new String(str);
@@ -38,15 +67,15 @@
       url = url || false;
       cb = cb || false;
       opts = opts || {};
-      opts.followRedirects = typeof opts.followRedirects === undefined ? true : opts.followRedirects;
+      opts.followRedirects = _typeof(opts.followRedirects) === undefined ? true : opts.followRedirects;
       if (url === false) return;
-      const req = new XMLHttpRequest();
+      var req = new XMLHttpRequest();
       req.withCredentials = opts.withCredentials || false;
       req.requestContentType = opts.requestContentType || null;
 
       function onReadyStateChangeCallback() {
         if (req.readyState !== 4) return;
-        const strUtils = StringUtils(req.status);
+        var strUtils = StringUtils(req.status);
 
         if (strUtils.startsWith(30)) {
           return new XMLRequest(url, cb, opts);
@@ -82,14 +111,14 @@
       run();
     }
 
-    const Noop = function () {};
+    var Noop = function Noop() {};
 
-    const isIE11 = !!window.MSInputMethodContext && !!document.documentMode;
+    var isIE11 = !!window.MSInputMethodContext && !!document.documentMode;
 
-    const Log = function (t) {
+    var Log = function Log(t) {
       if (localStorage.getItem("MirezPlayerDebug") === null) return Noop;
       t = t || "info";
-      const colors = {
+      var colors = {
         info: {
           bg: "#19cf85",
           fg: "#272b30"
@@ -107,10 +136,10 @@
           fg: "#272b30"
         }
       };
-      let c;
+      var c;
 
       if (t in colors === false) {
-        if (typeof t === "object") {
+        if (_typeof(t) === "object") {
           c = {
             fg: t.fg || "#777",
             bg: t.bg || "transparent"
@@ -139,14 +168,14 @@
       };
     };
 
-    const getNodeValue = function (node) {
+    var getNodeValue = function getNodeValue(node) {
       return node.nodeValue || node.textContent;
     };
 
-    const getTrackingEvents = function (trackingEventsNodes) {
-      const events = [];
-      let eventName;
-      let tmpEvent;
+    var getTrackingEvents = function getTrackingEvents(trackingEventsNodes) {
+      var events = [];
+      var eventName;
+      var tmpEvent;
       if (trackingEventsNodes.length === 0) return events;
       trackingEventsNodes.forEach(function (eventNode) {
         eventName = eventNode.getAttribute("event");
@@ -164,7 +193,7 @@
       return events;
     };
 
-    const TrackingRequest = function (url, cb, opts) {
+    var TrackingRequest = function TrackingRequest(url, cb, opts) {
       url = url || false;
 
       cb = cb || function () {};
@@ -172,7 +201,7 @@
       opts = opts || {};
       opts.parent = opts.parent || document.body;
       if (url === false) return;
-      const img = document.createElement("img");
+      var img = document.createElement("img");
       img.src = url;
 
       function cleanup() {
@@ -214,14 +243,14 @@
       TrackingRequest(event.url);
     }
 
-    const AttachTrackingEventsToPlayer = function (events, player) {
-      const videoEl = player.getVideoEl();
-      const _timeupdateEvents = [];
-      const _cleanup = []; // for each tracking event
+    var AttachTrackingEventsToPlayer = function AttachTrackingEventsToPlayer(events, player) {
+      var videoEl = player.getVideoEl();
+      var _timeupdateEvents = [];
+      var _cleanup = []; // for each tracking event
 
       events.forEach(function (event) {
         // create a intermediate functions, so we can remove the event listeners right after firing it.
-        const _OnStartEvent = function () {
+        var _OnStartEvent = function _OnStartEvent() {
           videoEl.removeEventListener("play", _OnStartEvent);
           OnStartEvent(event);
         };
@@ -233,10 +262,10 @@
         }
       });
 
-      const _timeupdateEventsTicker = function () {
+      var _timeupdateEventsTicker = function _timeupdateEventsTicker() {
         if (_timeupdateEvents.length > 0) {
-          let tue = null;
-          let i = _timeupdateEvents.length;
+          var tue = null;
+          var i = _timeupdateEvents.length;
 
           while (i--) {
             tue = _timeupdateEvents[i];
@@ -255,7 +284,7 @@
       var _allClean = function _allClean() {
         videoEl.removeEventListener("timeupdate", _timeupdateEventsTicker);
 
-        _cleanup.forEach( function (clean){
+        _cleanup.forEach(function (clean) {
           videoEl.removeEventListener(clean.event, clean.func);
         });
 
@@ -265,25 +294,25 @@
       videoEl.addEventListener("ended", _allClean);
     };
 
-    const triggerUEL = function (player, uel, n, evt) {
+    var triggerUEL = function triggerUEL(player, uel, n, evt) {
       evt = evt || null;
 
       if (uel[n] && uel[n].length) {
-        uel[n].forEach(function(cb){
+        uel[n].forEach(function (cb) {
           cb(evt, player, n);
         });
       }
     };
 
-    const AttachUserEventsToPlayer = function (player, playerDataStore) {
-      const events = [{
+    var AttachUserEventsToPlayer = function AttachUserEventsToPlayer(player, playerDataStore) {
+      var events = [{
         name: "start"
       }];
-      const videoEl = player.getVideoEl();
-      const uel = playerDataStore.userEventListeners;
+      var videoEl = player.getVideoEl();
+      var uel = playerDataStore.userEventListeners;
 
-      events.forEach(function(event){
-        const _OnStartEvent = function () {
+      events.forEach(function (event) {
+        var _OnStartEvent = function _OnStartEvent() {
           if (!player.isPlayingAd()) return;
           if (videoEl.currentTime > 1) return;
           triggerUEL(player, uel, "adStart");
@@ -300,16 +329,16 @@
 
     function VASTParser(opts) {
       opts = opts || {};
-      const playerMethod = opts.playerMethod;
-      const playerDataStore = opts.playerDataStore; //const origVideoSrc = opts.playerMethod.getOriginalVideoSource();
+      var playerMethod = opts.playerMethod;
+      var playerDataStore = opts.playerDataStore; //const origVideoSrc = opts.playerMethod.getOriginalVideoSource();
 
-      const __dataStore = opts;
+      var __dataStore = opts;
       __dataStore.maxRedirect = 10;
-      const method = {};
-      let trackingEvents = [];
-      let ClickTrackings = [];
-      let mediaFiles = [];
-      let collectedItems = {
+      var method = {};
+      var trackingEvents = [];
+      var ClickTrackings = [];
+      var mediaFiles = [];
+      var collectedItems = {
         errors: [],
         impressions: [],
         creatives: []
@@ -326,13 +355,13 @@
         };
       };
 
-      const getLinearAd = linearNode => {
+      var getLinearAd = function getLinearAd(linearNode) {
         if (!linearNode) return null;
 
-        const GetMediaFiles = () => {
-          const mediaFilesNodes = linearNode.querySelectorAll("MediaFiles MediaFile");
+        var GetMediaFiles = function GetMediaFiles() {
+          var mediaFilesNodes = linearNode.querySelectorAll("MediaFiles MediaFile");
           if (!mediaFilesNodes) return mediaFiles;
-          mediaFilesNodes.forEach(mediaFileNode => {
+          mediaFilesNodes.forEach(function (mediaFileNode) {
             mediaFiles.push({
               src: mediaFileNode.textContent || mediaFileNode.src || "",
               delivery: mediaFileNode.getAttribute("delivery") || null,
@@ -345,14 +374,14 @@
           return mediaFiles;
         };
 
-        const GetMediaFileClosestTo = (k, value) => {
+        var GetMediaFileClosestTo = function GetMediaFileClosestTo(k, value) {
           Log()("Mirez-Player", "VASTParser", "Get closest media file based on " + k + ":", value);
-          let mediaFile = null; // try to guess the best fit
+          var mediaFile = null; // try to guess the best fit
 
-          let i = 0;
-          const len = mediaFiles.length;
-          const possibleValues = [];
-          let mf; // gather all available heights
+          var i = 0;
+          var len = mediaFiles.length;
+          var possibleValues = [];
+          var mf; // gather all available heights
 
           for (i = 0; i < len; i++) {
             mf = mediaFiles[i];
@@ -362,9 +391,9 @@
             }
           }
 
-          let closestValue = null;
+          var closestValue = null;
           closestValue = ClosestInArray(possibleValues, value);
-          mediaFiles.forEach(mf => {
+          mediaFiles.forEach(function (mf) {
             // VPAID, exit early
             if (mf.type === "application/javascript") {
               mediaFile = mf;
@@ -406,28 +435,30 @@
       }
 
       method.Parse = function (xml, url) {
-        const xmlDoc = xml.documentElement;
-        const wrapper = xmlDoc.querySelector("Wrapper");
-        let adVerifications = xmlDoc.querySelectorAll("AdVerifications Verification");
-        const errorPixels = xmlDoc.querySelectorAll("Error");
-        const impression = xmlDoc.querySelectorAll("Impression");
-        const impressions = xmlDoc.querySelectorAll("Impressions");
+        var xmlDoc = xml.documentElement;
+        var wrapper = xmlDoc.querySelector("Wrapper");
+        var errorPixels = xmlDoc.querySelectorAll("Error");
+        var adVerifications = xmlDoc.querySelectorAll("AdVerifications Verification");
+        var impression = xmlDoc.querySelectorAll("Impression");
+        var impressions = xmlDoc.querySelectorAll("Impressions");
 
-        const _ClickTrackings = xmlDoc.querySelectorAll("ClickTracking");
+        var _ClickTrackings = xmlDoc.querySelectorAll("ClickTracking");
 
-        const trackingEventsNodes = xmlDoc.querySelectorAll("TrackingEvents Tracking");
+        var trackingEventsNodes = xmlDoc.querySelectorAll("TrackingEvents Tracking");
 
         if (xml !== null) {
-          let i = __dataStore.maxRedirect--;
+          var i = __dataStore.maxRedirect--;
           Log()("Mirez-Player", "VASTParser", i + " VAST URL: ", url);
           Log()("Mirez-Player", "VASTParser", "VAST Document:", xml.cloneNode(true));
         } else {
           method.Reset();
         }
 
+        console.log("Test");
+        console.log(errorPixels); // Push Error
 
         if (errorPixels && errorPixels.length) {
-          errorPixels.forEach(errorPixel => {
+          errorPixels.forEach(function (errorPixel) {
             collectedItems.errors.push(errorPixel.textContent);
           });
           Log()("Mirez-Player", "VASTParser", "Error Pixel: ", collectedItems.errors);
@@ -445,7 +476,7 @@
 
 
         if (_ClickTrackings) {
-          _ClickTrackings.forEach(_ClickTracking => {
+          _ClickTrackings.forEach(function (_ClickTracking) {
             ClickTrackings.push(getNodeValue(_ClickTracking));
           });
 
@@ -461,33 +492,33 @@
 
         if (!wrapper) {
           Log()("Mirez-Player", "VASTParser", " Finish: ", "Wrapper End");
-          const creatives = xmlDoc.querySelectorAll("Creatives Creative");
+          var creatives = xmlDoc.querySelectorAll("Creatives Creative");
 
           if (creatives.length === 0) {
             method.Reset();
             return;
           }
 
-          let linearAd = null;
-          let linearNode = null; //#######################################################################
+          var linearAd = null;
+          var linearNode = null; //#######################################################################
 
-          creatives.forEach(creative => {
+          creatives.forEach(function (creative) {
             if (!creative.querySelector("Linear")) return;
             linearNode = creative.querySelector("Linear");
 
-            const _ClickThrough = linearNode.querySelector("ClickThrough");
+            var _ClickThrough = linearNode.querySelector("ClickThrough");
             linearAd = getLinearAd(linearNode);
             Log()("Mirez-Player", "VASTParser", "Possible media files:", linearAd.GetMediaFiles());
           });
 
           if (linearAd) {
             AttachUserEventsToPlayer(playerMethod, playerDataStore);
-            trackingEvents.forEach(te => {
+            trackingEvents.forEach(function (te) {
               AttachTrackingEventsToPlayer(te, playerMethod);
             }); //triggerUEL();
 
-            const videoEl = opts.playerMethod.getVideoEl();
-            const mediaFile = linearAd.GetMediaFileClosestTo("height", opts.playerMethod.getHeight()); // VPAID
+            var videoEl = opts.playerMethod.getVideoEl();
+            var mediaFile = linearAd.GetMediaFileClosestTo("height", opts.playerMethod.getHeight()); // VPAID
 
             if (mediaFile.type === "application/javascript") {
               Log()("Mirez-Player", "VASTParser", "Linear Node:", linearNode);
@@ -505,7 +536,7 @@
         } //#############################################################################
 
 
-        let vastTagUri = wrapper.querySelector("VASTAdTagURI").textContent;
+        var vastTagUri = wrapper.querySelector("VASTAdTagURI").textContent;
 
         if (vastTagUri) {
           method.Read(vastTagUri);
@@ -531,7 +562,7 @@
       return method;
     }
 
-    const VASTParserHandle = function (opts) {
+    var VASTParserHandle = function VASTParserHandle(opts) {
       opts = opts || {};
       if (!opts.playerMethod.getPreRollTag()) return console.log("VAST Tag is not present");
       opts.vastParser = new VASTParser({
@@ -541,12 +572,14 @@
       opts.vastParser.Read(opts.playerMethod.getPreRollTag());
     };
 
-    const VASTPlayer = function (domNode) {
+    var VASTPlayer = function VASTPlayer(domNode) {
+      var _this = this;
+
       Log()("Mirez-Player", "VASTPlayer", "DOMNode", domNode);
 
-      const __self = this;
+      var __self = this;
 
-      const __dataStore = {
+      var __dataStore = {
         el: domNode,
         videoEl: domNode.querySelector("video"),
         contentEl: domNode.querySelector(".mirez-conent"),
@@ -569,101 +602,142 @@
         prerollTag: domNode.getAttribute("preroll-tag")
       }; // Getter
 
-      this.getEl = () => __dataStore.el;
-
-      this.getPreRollTag = () => __dataStore.prerollTag;
-
-      this.getVideoEl = () => __dataStore.videoEl;
-
-      this.getLoader = () => __dataStore.loader;
-
-      this.getPlayIcon = () => __dataStore.playIcon;
-
-      this.getClickArea = () => __dataStore.playIcon;
-
-      this.getSoundIcon = () => __dataStore.soundIcon;
-
-      this.getSoundAnimIcon = () => __dataStore.soundAnimIcon;
-
-      this.getHeight = () => __dataStore.el.offsetHeight;
-
-      this.getCurrentTime = () => Math.floor(__dataStore.videoEl.currentTime); // Setter
-
-
-      this.setVastIsParsed = () => __dataStore.vastIsParsed = true;
-
-      this.setDefaultPlaybackRateForAds = () => {
-        this.getVideoEl().playbackRate = __dataStore.defaultPlaybackRateForAds;
-        this.getVideoEl().defaultPlaybackRate = __dataStore.defaultPlaybackRateForAds;
-        return this;
+      this.getEl = function () {
+        return __dataStore.el;
       };
 
-      this.setAnimSound = () => {
-        this.getSoundAnimIcon()[0].classList.remove("none");
-        this.getSoundAnimIcon()[1].classList.remove("none");
-        this.getSoundAnimIcon()[2].classList.remove("none");
+      this.getPreRollTag = function () {
+        return __dataStore.prerollTag;
       };
 
-      this.setAnimSoundNone = () => {
-        this.getSoundAnimIcon()[0].classList.add("none");
-        this.getSoundAnimIcon()[1].classList.add("none");
-        this.getSoundAnimIcon()[2].classList.add("none");
+      this.getVideoEl = function () {
+        return __dataStore.videoEl;
+      };
+
+      this.getLoader = function () {
+        return __dataStore.loader;
+      };
+
+      this.getPlayIcon = function () {
+        return __dataStore.playIcon;
+      };
+
+      this.getClickArea = function () {
+        return __dataStore.playIcon;
+      };
+
+      this.getSoundIcon = function () {
+        return __dataStore.soundIcon;
+      };
+
+      this.getSoundAnimIcon = function () {
+        return __dataStore.soundAnimIcon;
+      };
+
+      this.getHeight = function () {
+        return __dataStore.el.offsetHeight;
+      };
+
+      this.getCurrentTime = function () {
+        return Math.floor(__dataStore.videoEl.currentTime);
+      }; // Setter
+
+
+      this.setVastIsParsed = function () {
+        return __dataStore.vastIsParsed = true;
+      };
+
+      this.setDefaultPlaybackRateForAds = function () {
+        _this.getVideoEl().playbackRate = __dataStore.defaultPlaybackRateForAds;
+        _this.getVideoEl().defaultPlaybackRate = __dataStore.defaultPlaybackRateForAds;
+        return _this;
+      };
+
+      this.setAnimSound = function () {
+        _this.getSoundAnimIcon()[0].classList.remove("none");
+
+        _this.getSoundAnimIcon()[1].classList.remove("none");
+
+        _this.getSoundAnimIcon()[2].classList.remove("none");
+      };
+
+      this.setAnimSoundNone = function () {
+        _this.getSoundAnimIcon()[0].classList.add("none");
+
+        _this.getSoundAnimIcon()[1].classList.add("none");
+
+        _this.getSoundAnimIcon()[2].classList.add("none");
       }; // Is
 
 
-      this.isPaused = () => __dataStore.videoEl.paused;
-
-      this.isPlayingAd = () => __dataStore.isPlayingAd;
-
-      this.isFirstStart = () => __dataStore.isFirstStart; // hide || show
-
-
-      this.hideLoader = () => {
-        this.getLoader().classList.remove("show");
-        this.getLoader().classList.add("hide");
+      this.isPaused = function () {
+        return __dataStore.videoEl.paused;
       };
 
-      this.showLoader = () => {
-        this.getLoader().classList.remove("hide");
-        this.getLoader().classList.add("show");
+      this.isPlayingAd = function () {
+        return __dataStore.isPlayingAd;
       };
 
-      this.hidePlayIcon = () => {
-        this.getPlayIcon().classList.remove("show");
-        this.getPlayIcon().classList.add("hide");
+      this.isFirstStart = function () {
+        return __dataStore.isFirstStart;
+      }; // hide || show
+
+
+      this.hideLoader = function () {
+        _this.getLoader().classList.remove("show");
+
+        _this.getLoader().classList.add("hide");
       };
 
-      this.showPlayIcon = () => {
-        this.getPlayIcon().classList.remove("hide");
-        this.getPlayIcon().classList.add("show");
+      this.showLoader = function () {
+        _this.getLoader().classList.remove("hide");
+
+        _this.getLoader().classList.add("show");
       };
 
-      this.showAdIsPlaying = type => {
-        this.setDefaultPlaybackRateForAds();
+      this.hidePlayIcon = function () {
+        _this.getPlayIcon().classList.remove("show");
+
+        _this.getPlayIcon().classList.add("hide");
+      };
+
+      this.showPlayIcon = function () {
+        _this.getPlayIcon().classList.remove("hide");
+
+        _this.getPlayIcon().classList.add("show");
+      };
+
+      this.showAdIsPlaying = function (type) {
+        _this.setDefaultPlaybackRateForAds();
+
         __dataStore.isPlayingAd = true;
-        this.getEl().classList.add("playing-ad"); //this.getAdsRemainingTimeContainerEl().classList.remove("hidden");
 
-        if (type) this.getEl().classList.add("ad-" + type);
+        _this.getEl().classList.add("playing-ad"); //this.getAdsRemainingTimeContainerEl().classList.remove("hidden");
+
+
+        if (type) _this.getEl().classList.add("ad-" + type);
       };
 
-      this.hideSoundIcon = () => {
-        this.getSoundIcon().classList.remove("show");
-        this.getSoundIcon().classList.add("hide");
+      this.hideSoundIcon = function () {
+        _this.getSoundIcon().classList.remove("show");
+
+        _this.getSoundIcon().classList.add("hide");
       };
 
-      this.showSoundIcon = () => {
-        this.getSoundIcon().classList.remove("hide");
-        this.getSoundIcon().classList.add("show");
+      this.showSoundIcon = function () {
+        _this.getSoundIcon().classList.remove("hide");
+
+        _this.getSoundIcon().classList.add("show");
       }; // addEventListener
 
 
-      __self.getVideoEl().addEventListener("play", evt => {
-        __dataStore.userEventListeners.play.forEach(cb => {
+      __self.getVideoEl().addEventListener("play", function (evt) {
+        __dataStore.userEventListeners.play.forEach(function (cb) {
           cb(evt, __self, "play");
         });
 
         if (__self.isFirstStart() === true) {
-          __dataStore.userEventListeners.firstStart.forEach(cb => {
+          __dataStore.userEventListeners.firstStart.forEach(function (cb) {
             cb(evt, __self, "firstStart");
           });
 
@@ -671,7 +745,7 @@
         }
 
         if (__self.isPlayingAd() !== false && __self.getCurrentTime() > 0) {
-          __dataStore.userEventListeners.contentVideoResume.forEach(cb => {
+          __dataStore.userEventListeners.contentVideoResume.forEach(function (cb) {
             cb(evt, __self, "contentVideoResume");
           });
 
@@ -682,35 +756,42 @@
       });
 
       this.addEvent = function () {
-        const player = __dataStore.videoEl;
-        const playerContent = __dataStore.contentEl;
-        playerContent.addEventListener("click", evt => {
+        var _this2 = this;
+
+        var player = __dataStore.videoEl;
+        var playerContent = __dataStore.contentEl;
+        playerContent.addEventListener("click", function (evt) {
           evt.preventDefault();
-          let target = evt.target;
-          const clicktarget = evt.target;
+          var target = evt.target;
+          var clicktarget = evt.target;
 
           switch (clicktarget.getAttribute("data-clicktarget")) {
             case "click-area":
               break;
 
             case "play-icon-cell":
-              this.hidePlayIcon();
+              _this2.hidePlayIcon();
+
               player.play();
               break;
 
             case "play-icon":
-              this.hidePlayIcon();
-              this.showSoundIcon();
+              _this2.hidePlayIcon();
+
+              _this2.showSoundIcon();
+
               player.play();
               break;
 
             case "click-sound":
               if (player.muted === true) {
                 player.muted = false;
-                this.setAnimSoundNone();
+
+                _this2.setAnimSoundNone();
               } else {
                 player.muted = true;
-                this.setAnimSound();
+
+                _this2.setAnimSound();
               }
 
               break;
@@ -740,17 +821,21 @@
       __self.addEvent();
     };
 
-    const PlayerFramework = function () {
+    var PlayerFramework = function PlayerFramework() {
       //new Object
-      const pub = {};
+      var pub = {};
 
-      pub.enableDebugMode = () => window.localStorage.setItem("MirezPlayerDebug", 1);
+      pub.enableDebugMode = function () {
+        return window.localStorage.setItem("MirezPlayerDebug", 1);
+      };
 
-      pub.disableDebugMode = () => window.localStorage.removeItem("MirezPlayerDebug");
+      pub.disableDebugMode = function () {
+        return window.localStorage.removeItem("MirezPlayerDebug");
+      };
 
       pub.initVASTPlayer = function () {
-        const domNode = document.querySelector(".mirez-player");
-        const r = new VASTPlayer(domNode);
+        var domNode = document.querySelector(".mirez-player");
+        var r = new VASTPlayer(domNode);
         return r;
       };
 
@@ -765,8 +850,8 @@
       return pub;
     };
 
-    (() => {
-      const playerFramework = "mirezplayer";
+    (function () {
+      var playerFramework = "mirezplayer";
       window[playerFramework] = new PlayerFramework();
     })();
 
