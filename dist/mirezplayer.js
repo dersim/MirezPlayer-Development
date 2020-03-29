@@ -491,6 +491,7 @@
           VPAIDCreative.on("AdVideoComplete", onVideoComplete);
           VPAIDCreative.on("AdClickThru", function (clickThruURL, _, clickThruPlayerHandles) {
             if (clickThruPlayerHandles) {
+              player.setPause();
               window.open(clickThruURL);
             }
 
@@ -857,6 +858,9 @@
         isPlayingAd: false,
         defaultPlaybackRateForAds: 1,
         userEventListeners: {
+          adCall: [],
+          adPause: [],
+          adResume: [],
           adStart: [],
           adClick: [],
           adLoaded: [],
@@ -928,7 +932,7 @@
         return _this;
       };
 
-      this.setAnimSound = function () {
+      this.setAnimSoundOn = function () {
         _this.getSoundAnimIcon()[0].classList.remove("none");
 
         _this.getSoundAnimIcon()[1].classList.remove("none");
@@ -936,7 +940,7 @@
         _this.getSoundAnimIcon()[2].classList.remove("none");
       };
 
-      this.setAnimSoundNone = function () {
+      this.setAnimSoundOff = function () {
         _this.getSoundAnimIcon()[0].classList.add("none");
 
         _this.getSoundAnimIcon()[1].classList.add("none");
@@ -950,6 +954,10 @@
 
       this.setSoundOff = function () {
         return __dataStore.videoEl.muted = false;
+      };
+
+      this.setPause = function () {
+        return __dataStore.videoEl.pause();
       }; // Is
 
 
@@ -1098,11 +1106,11 @@
               if (player.muted === true) {
                 player.muted = false;
 
-                _this2.setAnimSoundNone();
+                _this2.setAnimSoundOff();
               } else {
                 player.muted = true;
 
-                _this2.setAnimSound();
+                _this2.setAnimSoundOn();
               }
 
               break;

@@ -20,6 +20,9 @@ const __dataStore = {
     isPlayingAd: false,
     defaultPlaybackRateForAds: 1,
     userEventListeners: {
+        adCall: [],
+        adPause: [],
+        adResume: [],
         adStart: [],
         adClick: [],
         adLoaded: [],
