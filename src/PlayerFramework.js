@@ -18,10 +18,6 @@ const PlayerFramework = function() {
         pub.initVASTPlayer();
     }
 
-    pub.Test = function () {
-        console.log("tesasdt");
-    }
-
     return pub;
 }
 

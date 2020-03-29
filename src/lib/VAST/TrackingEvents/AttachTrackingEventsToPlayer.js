@@ -1,4 +1,4 @@
-import TrackingRequest from "./TrackingRequest";
+import TrackingRequest from "../TrackingRequest";
 import Log from "../../Log";
 
 function OnStartEvent(event) {

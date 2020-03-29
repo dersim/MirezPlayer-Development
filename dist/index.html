@@ -9,8 +9,8 @@
 <link rel="stylesheet" href="mirezplayer.css">
 <section style="margin:0 auto; width: 776px; max-width: 100%">
     <div class="mirez-player fixed-ratio ratio-16-9"
-         preroll-tag = "https://vast.mathtag.com/?id=5aW95q2jLzIxLyAvTkdabFl6VmtZekV0T0RCak5DMDBOekF3TFdFeE4yTXRaREkyTkdOalpXWTBNVGhoLzM0Mjg4NjYxMDc1NTUwMDYyMTMvNzUyNTk2Ny81NjYyMzY5LzI2LzY0X2ZWSUxJcTFlX2NtWVRjR1VpMHRKX2ZKZ3hMX0tyVkVQaGQ5UVVQcWsvMi8zOTQwNTkvMC8xMS8xMTg4NTMwLzE1MjIxNDUyNDMvMTg3OTg2Lzc0NzAyNy8yLzAvMC9OR1psWXpWa1l6RXRPREJqTkMwME56QXdMV0V4TjJNdFpESTJOR05qWldZME1UaGgvMC8wLzM5NDA1OS8wLzEvMzQyODg2NjEwNzU1NTAwNjIxMy9hbXMvMC84ODkxLzQ4LzUxLzgvOTAuMTg2LjIzLjAvMC4wMDAvMTU4NDMwMDU0OS8xNTg0MzE4NTQ5Lw/DFHK-P-M3ohjJsJPNc5ujPvSNoc&nodeid=702&group=eu&auctionid=3428866107555006213&exch=ads&sid=5662369&cid=7525967&price=27.80&bp=dd_aeaabe&nfy_act=LD5wfnw&act=LiIiJiQocHxrPSwuJCMqcHxrKy5wfGshIioqJCMqcHxrOiwkOQsiPwQgPQMiOSQrcH0&protocol_version=1&buyerCreativeId=7525967&cvid=11&aid=3428866107555006213&adverid=187986&site=t-online.de&cdsp=false&fraud=true&optout=0&lmt=0&oid=101463&cacheBuster=[TIMESTAMP]&skippable=2&cmp=747027&dealid=394059&sup_dealid=tsipq68cww&ua=Mozilla/5.0%20%2528Windows%20NT%2010.0%3B%20Win64%3B%20x64%2529%20AppleWebKit/537.36%20%2528KHTML%2C%20like%20Gecko%2529%20Chrome/80.0.3987.132%20Safari/537.36&uuid=4fec5dc1-80c4-4700-a17c-d264ccef418a&siteid=88592&pid=14876&ip=90.186.23.0&prot=https%3A%2F%2F&count=1&wo_lookup=087125d1-3450-4ec6-b160-427d1883cd6c">
-        <div class="mirez-conent">
+         preroll-tag = "https://tracking.m6r.eu/win/vast?creativeLinkId=9edccc45-0667-47a9-a0b5-b380a27c4858&id=mbr-auction%3A3d1a1e1e-540f-4006-9127-8f935982e739&adscalePrice=M2U1N2I2MGVmOWNhNGFkZkP0eDTqOBTqrUD6Lw&mbrUserId=b4d5f637e0a6fb588f09da79a16a1fd4&checkcookies=true&z=">
+        <div class="mirez-content">
             <video
                     muted="true">
                 <source
@@ -20,12 +20,18 @@
             <div class="mirez-loader hide">
                 <div class="mirez-animation"></div>
             </div>
-            <div class="play-icon-area hide" data-clicktarget="click-area">
+            <div class="vpaid-area hide" data-clicktarget="click-vpaid"></div>
+            <div class="play-icon-area hide" data-clicktarget="click-play">
                 <div class="play-icon-container">
-                    <div class="play-icon-cell" data-clicktarget="play-icon-cell">
-                        <div class="play-icon" data-clicktarget="play-icon"></div>
+                    <div class="play-icon-cell" data-clicktarget="click-play">
+                        <div class="play-icon" data-clicktarget="click-play"></div>
+                        <div class="play-icon-left" data-clicktarget="click-play"></div>
+                        <div class="play-icon-right" data-clicktarget="click-play"></div>
                     </div>
                 </div>
+            </div>
+            <div class="landing-page-area hide" data-clicktarget="click-landing-page">
+                <span data-clicktarget="click-landing-page">MEHR ERFAHREN</span>
             </div>
             <div class="mirez-sound-area hide" data-clicktarget="click-sound">
                 <div class="mirez-sound-container" data-clicktarget="click-sound">
@@ -43,10 +49,11 @@
                         </tr>
                     </table>
                 </div>
+                <div class="mirez-click-area" data-clicktarget="click-sound"></div>
             </div>
         </div>
     </div>
 </section>
-<script src="mirezplayer.js" onload="window.mirezplayer.Init()"></script>
+<script src="mirez-player.min.js" onload="window.mirezplayer.Init()"></script>
 </body>
 </html>

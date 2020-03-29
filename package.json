@@ -8,7 +8,9 @@
     "build": "webpack",
     "serve": "./node_modules/.bin/serve ./dist",
     "build-js": "./node_modules/.bin/rollup -c",
-    "build-css": "./node_modules/.bin/node-sass src/scss/app.scss ./dist/mirezplayer.css"
+    "build-css": "./node_modules/.bin/node-sass src/scss/app.scss ./dist/mirezplayer.css",
+    "min-js": "./node_modules/.bin/babel-minify ./dist/mirezplayer.js -o ./dist/mirez-player.min.js",
+    "min-css": "./node_modules/.bin/node-sass ./src/app.scss ./dist/mirez-player.min.css"
   },
   "repository": {
     "type": "git",

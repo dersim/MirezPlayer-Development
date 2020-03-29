@@ -36,10 +36,12 @@ div.mirez-player .show {
   100% {
     transform: rotate(360deg); } }
 
-div.mirez-conent {
+div.mirez-content {
   width: 100%;
   padding: 0;
   margin: 0; }
+  div.mirez-content video {
+    border-radius: 1%; }
 
 div.play-icon-area .hide {
   display: none; }
@@ -75,48 +77,57 @@ div.play-icon {
   border: solid 2px #fff;
   border-radius: 100px;
   background-color: rgba(219, 219, 219, 0.3); }
-  div.play-icon:before {
-    content: "";
-    width: 34px;
-    height: 53px;
-    border-left: 2px solid #fff;
-    border-radius: 5px;
-    position: absolute;
-    margin-top: 22px;
-    margin-left: -12px; }
-  div.play-icon:after {
-    content: "";
-    position: absolute;
-    width: 42px;
-    height: 42px;
-    transform: rotate(45deg) skew(-5deg, -5deg);
-    border-top: 2px solid #fff;
-    border-right: 2px solid #fff;
-    border-radius: 5px;
-    margin-top: 26.5px;
-    margin-left: -28.2px; }
   div.play-icon:hover {
     background-color: rgba(0, 0, 0, 0.5); }
+
+div.play-icon-left {
+  display: inline-block;
+  content: "";
+  width: 34px;
+  height: 53px;
+  border-left: 2px solid #fff;
+  border-radius: 5px;
+  position: absolute;
+  margin-top: 26px;
+  margin-left: -65px; }
+
+div.play-icon-right {
+  display: inline-block;
+  content: "";
+  position: absolute;
+  width: 42px;
+  height: 42px;
+  transform: rotate(45deg) skew(-5deg, -5deg);
+  border-top: 2px solid #fff;
+  border-right: 2px solid #fff;
+  border-radius: 5px;
+  margin-top: 30.5px;
+  margin-left: -81.2px; }
 
 div.mirez-sound-area {
   position: absolute;
   display: flex;
   width: 6%;
   height: 10%;
-  bottom: 7%;
+  bottom: 5%;
   right: 5%;
-  background-color: rgba(219, 219, 219, 0.3);
   border-radius: 50%;
-  z-index: 101;
+  z-index: 101; }
+
+div.mirez-click-area {
+  width: 100%;
+  position: absolute;
+  height: 100%;
+  top: -2px;
+  left: -2px;
+  border-radius: 50%;
   border: solid 2px #fff;
   cursor: pointer; }
-  div.mirez-sound-area:hover {
-    background-color: rgba(0, 0, 0, 0.1); }
 
 div.mirez-sound-container {
   position: absolute;
   top: 0;
-  left: 0px;
+  left: 0;
   width: 100%;
   height: 100%; }
 
@@ -202,13 +213,48 @@ table.tb-sound {
   height: 100%;
   align-items: center; }
 
+div.landing-page-area .hide {
+  display: none; }
+
+div.landing-page-area .show {
+  display: block; }
+
+.landing-page-area.desktop {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 99;
+  cursor: pointer; }
+  .landing-page-area.desktop span {
+    display: none; }
+
+.landing-page-area.mobile {
+  position: absolute;
+  width: 20%;
+  height: 7%;
+  top: 11px;
+  right: 13px;
+  z-index: 99;
+  border-radius: 4%;
+  border: solid 2px #fff;
+  font-family: helvetica, arial, sans-serif; }
+  .landing-page-area.mobile span {
+    display: flex;
+    color: white;
+    align-items: center;
+    margin: 0 auto; }
+
 div.mirez-player {
   background-color: black;
   position: relative;
   display: flex;
   align-items: center;
   width: 100%;
-  max-width: 100%; }
+  max-width: 100%;
+  box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.7);
+  border-radius: 1%; }
 
 div.mirez-player.ratio-16-9:before {
   padding-top: 56.25%; }

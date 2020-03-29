@@ -295,6 +295,11 @@
     };
 
     var triggerUEL = function triggerUEL(player, uel, n, evt) {
+      console.log("triggerUEL");
+      console.log(player);
+      console.log(uel);
+      console.log(n);
+      console.log(uel[n]);
       evt = evt || null;
 
       if (uel[n] && uel[n].length) {
@@ -325,6 +330,206 @@
             break;
         }
       });
+    };
+
+    var VASTErrorCodes = {
+      100: "XML Parsing Error.",
+      101: "VAST schema validation error.",
+      102: "VAST version of response not supported.",
+      200: "Trafficking error. Media player received an Ad type that it was not expecting and/or cannot play.",
+      201: "Media player expecting different linearity.",
+      202: "Media player expecting different duration.",
+      203: "Media player expecting different size.",
+      204: "Ad category was required but not provided.",
+      205: "Inline Category violates Wrapper BlockedAdCagetories (refer 3.19.2).",
+      206: "Ad Break shortened. Ad was not served.",
+      300: "General Wrapper error.",
+      301: "Timeout of VAST URI provied in Wrapper element, or of VAST URI provied in a subsequent Wrapper element. (URI was either unavailable or reached a timeout as defined by the media player.)",
+      302: "Wrapper limit reached, as defined by the media player. Too many Wrapper responses have been received with no InLine response.",
+      303: "No VAST response after one or more Wrappers.",
+      304: "InLine response returned ad unit that failed to result in ad display withing defined time limit.",
+      400: "General Linear error. Media player is unable to display the Linear Ad.",
+      401: "File not found. Unable to find Linear/MedaFile from URI.",
+      402: "Timeout of MediaFile URI.",
+      403: "Could't find MediaFile that is supported by this media player, based on the attributes of the MediaFile element.",
+      405: "Problem displaying MediaFile. Media player found a MediaFile with supported type but couldn't display it. MediaFile may include: unsupported codecs, different MIME type than MediaFile@type, unsupported delivery method, etc.",
+      900: "Undefined Error.",
+      901: "General VPAID error.",
+      902: "General InteractiveCreativeFile error code"
+    };
+
+    var VPAIDCreative = null;
+
+    function GetIframeDocument(ifr) {
+      var ifrDoc = ifr.contentWindow && ifr.contentWindow.document;
+      if (!ifrDoc) return false;
+      return ifrDoc;
+    }
+
+    var CheckVPAIDInterface = function CheckVPAIDInterface(VPAIDCreative) {
+      if (VPAIDCreative.handshakeVersion && typeof VPAIDCreative.handshakeVersion === "function" && VPAIDCreative.initAd && typeof VPAIDCreative.initAd === "function" && VPAIDCreative.startAd && typeof VPAIDCreative.startAd === "function" && VPAIDCreative.stopAd && typeof VPAIDCreative.stopAd === "function" && VPAIDCreative.skipAd && typeof VPAIDCreative.skipAd === "function" && VPAIDCreative.resizeAd && typeof VPAIDCreative.resizeAd === "function" && VPAIDCreative.pauseAd && typeof VPAIDCreative.pauseAd === "function" && VPAIDCreative.resumeAd && typeof VPAIDCreative.resumeAd === "function" && VPAIDCreative.expandAd && typeof VPAIDCreative.expandAd === "function" && VPAIDCreative.collapseAd && typeof VPAIDCreative.collapseAd === "function" && VPAIDCreative.subscribe && typeof VPAIDCreative.subscribe === "function" && VPAIDCreative.unsubscribe && typeof VPAIDCreative.unsubscribe === "function") {
+        return true;
+      }
+
+      return false;
+    };
+
+    var checkIfrLoaded = function checkIfrLoaded(cw, cb) {
+      var c = cw.__LOADED;
+      cb = cb || Noop;
+
+      if (c && c === true) {
+        var fn = cw.getVPAIDAd;
+
+        if (fn && typeof fn === "function") {
+          VPAIDCreative = fn();
+
+          if (CheckVPAIDInterface(VPAIDCreative)) {
+            cb(false, VPAIDCreative);
+          } else {
+            cb("No valid VPAID", {});
+          }
+        } else {
+          Log("error")("Mirez-Player", "VPAIDUtils", "iframe has been fully loaded, but getVPAIDAd is not a fn, but this:", fn);
+        }
+      } else {
+        setTimeout(function () {
+          checkIfrLoaded(cw, cb);
+        }, 200);
+      }
+    };
+
+    function CreateIframe(url, currentAd, player, playerDataStore, opts) {
+      var ifr = document.createElement("iframe");
+      ifr.href = "about:blank";
+      ifr.setAttribute("style", "height:1px;width:1px;border:0 none;position:absolute;top:-10px;left:-10px;");
+      ifr.id = "VPAIDAdLoaderFrame" + Date.now();
+
+      var onIframeWriteCb = function onIframeWriteCb() {
+        var cw = ifr.contentWindow;
+        checkIfrLoaded(cw, function (VPAIDCreativeErr, VPAIDCreative) {
+          if (VPAIDCreativeErr) {
+            Log("error")("MirezPlayer", "VPAIDUtils", VPAIDCreativeErr, VPAIDCreative);
+            return;
+          }
+
+          Log()("Mirez-Player", "VPAIDUtils", "VPAID is", VPAIDCreative);
+          Log()("Mirez-Player", "VPAIDUtils", "VPAID currentAd", currentAd); //const origVideoSrc = player.GetOriginalVideoSource();
+          //window.addEventListener("orientationchange", _onorientationchange);
+
+          /*
+          function _cleanupListeners() {
+              player
+                  .GetEl()
+                  .removeEventListener("fullscreenchange", _onfullscreenchange);
+              window.removeEventListener("orientationchange", _onorientationchange);
+          }
+          */
+
+
+          function onInit() {
+            Log()("Mirez-Player", "VPAIDUtils", "VPAID onInit"); //player.HideLoadingSpinner();
+            //player.HidePosterImage();
+
+            player.hideLoader();
+            player.showVPAIDArea();
+            player.showSoundIcon();
+            player.setSoundOn();
+            VPAIDCreative.startAd();
+          }
+          /*
+          function ResumeOrigVideo() {
+              _cleanupListeners();
+              const videoEl = player.GetVideoEl();
+              // it seems as if some vpaid spots restore the origVideoSrc by themselves
+              if (videoEl.src !== origVideoSrc.src) {
+                  videoEl.src = origVideoSrc.src;
+                  player.Play();
+              } else {
+                  // some of them even fire the play event again?!
+                  if (!player.IsPlaying()) {
+                      player.Play();
+                  }
+              }
+              player.HideAdIsPlaying("preroll");
+              // Generate a clean clickJackingOverlayEl
+              player.CleanClickjackingOverlay();
+          }*/
+
+
+          function onVideoComplete() {
+            Log()("Mirez-Player", "VPAIDUtils", "VPAID onVideoComplete"); //ResumeOrigVideo();
+          }
+
+          function onAdSkipped() {
+            Log()("Mirez-Player", "VPAIDUtils", "VPAID Ad skipped"); //ResumeOrigVideo();
+          }
+
+          function onAdStop() {
+            Log()("Mirez-Player", "VPAIDUtils", "VPAID Ad stop"); //ResumeOrigVideo();
+          }
+
+          function onAdError(e) {
+            Log("error")("Mirez-Player", "VPAIDUtils", "VPAID onAdError:", e);
+            var errorCode = 405;
+            playerDataStore.userEventListeners.adError.forEach(function (cb) {
+              cb(errorCode, VASTErrorCodes[errorCode], e);
+            });
+            Log("error")("Mirez-Player", "VPAIDUtils", VASTErrorCodes[errorCode], e); //@TODO
+            // Track AdError and kill all other AdTracking-Events
+            //ResumeOrigVideo();
+          }
+
+          VPAIDCreative.on = function (n, cb) {
+            this.subscribe(cb, n);
+          };
+
+          VPAIDCreative.on("AdError", onAdError);
+          VPAIDCreative.on("AdLoaded", onInit);
+          VPAIDCreative.on("AdSkipped", onAdSkipped);
+          VPAIDCreative.on("AdStopped", onAdStop);
+          VPAIDCreative.on("AdVideoComplete", onVideoComplete);
+          VPAIDCreative.on("AdClickThru", function (clickThruURL, _, clickThruPlayerHandles) {
+            if (clickThruPlayerHandles) {
+              window.open(clickThruURL);
+            }
+
+            opts.clickTrackings.forEach(function (trackingURL) {
+              Log()("Mirez-Player", "VPAIDUtils", "Event", "ClickThru ClickTracking", trackingURL);
+              TrackingRequest(trackingURL);
+            });
+          });
+          var adParamsTxt = "";
+          var adParamsNode = currentAd.querySelector("AdParameters");
+
+          if (adParamsNode) {
+            adParamsTxt = adParamsNode.textContent;
+          }
+
+          Log()("Mirez-Player", "VPAIDUtils", "VPAID adParams", adParamsTxt);
+          VPAIDCreative.initAd(player.getWidth(), player.getHeight(), "normal", -1, {
+            AdParameters: adParamsTxt
+          }, {
+            slot: player.getVPaidArea(),
+            videoSlot: player.getVideoEl(),
+            videoSlotCanAutoPlay: false
+          });
+        });
+      };
+
+      document.body.appendChild(ifr);
+      var ifrDoc = GetIframeDocument(ifr);
+      ifrDoc.write("<!DOCTYPE html+" + ">" + "<he" + "ad><ti" + "tle></ti" + "tle></he" + "ad><bo" + "dy><script src=\"" + url + "\"></scr" + "ipt>" + "<scr" + "ipt>__LOADED=true;" + "</scr" + "ipt></body></html>");
+      onIframeWriteCb();
+    }
+
+    function LoadAdUnit(url, currentAd, player, playerDataStore, opts) {
+      Log("error")("Mirez-Player", "VPAIDUtils", "Loading VPAID URL:", url);
+      CreateIframe(url, currentAd, player, playerDataStore, opts);
+    }
+
+    var VPAIDUtils = {
+      LoadAdUnit: LoadAdUnit
     };
 
     function VASTParser(opts) {
@@ -454,8 +659,6 @@
           method.Reset();
         }
 
-        console.log("Test");
-        console.log(errorPixels); // Push Error
 
         if (errorPixels && errorPixels.length) {
           errorPixels.forEach(function (errorPixel) {
@@ -504,9 +707,32 @@
 
           creatives.forEach(function (creative) {
             if (!creative.querySelector("Linear")) return;
-            linearNode = creative.querySelector("Linear");
+            linearNode = creative.querySelector("Linear"); //AdClick
 
             var _ClickThrough = linearNode.querySelector("ClickThrough");
+
+            if (_ClickThrough) {
+              var clickLandingPageArea = opts.playerMethod.getLandingPageArea();
+              var clickTroughFunc = Noop;
+
+              clickTroughFunc = function clickTroughFunc() {
+                try {
+                  triggerUEL(playerMethod, playerDataStore.userEventListeners, "adClick");
+                } catch (exception) {
+                  Log("Error")("Mirez-Player", "VASTParser", "UserEventListenerException", exception);
+                }
+
+                ClickTrackings.forEach(function (ct) {
+                  Log()("Mirez-Player", "VASTParser", "ClickTracking", ct);
+                  TrackingRequest(ct);
+                });
+                Log()("Mirez-Player", "VASTParser", "ClickThrough", _ClickThrough);
+                window.open(getNodeValue(_ClickThrough));
+              };
+
+              clickLandingPageArea.addEventListener("click", clickTroughFunc);
+            }
+
             linearAd = getLinearAd(linearNode);
             Log()("Mirez-Player", "VASTParser", "Possible media files:", linearAd.GetMediaFiles());
           });
@@ -522,6 +748,15 @@
 
             if (mediaFile.type === "application/javascript") {
               Log()("Mirez-Player", "VASTParser", "Linear Node:", linearNode);
+              VPAIDUtils.LoadAdUnit(mediaFile.src, linearNode, playerMethod, playerDataStore, {
+                clickTrackings: ClickTrackings
+              }); // fire impression tracking pixels
+
+              collectedItems.impressions.forEach(function (imp) {
+                Log()("Mirez-Player", "VASTParser", "Impression fired", imp);
+                TrackingRequest(imp);
+              });
+              Log()("Mirez-Player", "VASTParser", "Collected Items:", collectedItems);
               return;
             } else {
               videoEl.src = mediaFile.src;
@@ -544,15 +779,15 @@
       };
 
       method.Read = function (url) {
-        var url = replaceURLMacro(url);
-        new XMLRequest(url, function (err, res) {
+        var URL = replaceURLMacro(url);
+        new XMLRequest(URL, function (err, res) {
           if (err) {
             //handleAjaxRequestErrors(err);
             //opts.onParsingDoneCallback();
             return;
           }
 
-          new method.Parse(res.responseXML, url);
+          new method.Parse(res.responseXML, URL);
         }, {
           requestContentType: "document" // withCredentials: true
 
@@ -572,6 +807,34 @@
       opts.vastParser.Read(opts.playerMethod.getPreRollTag());
     };
 
+    var isTablet = function isTablet() {
+      window.onload = userAgentDetect;
+
+      function userAgentDetect() {
+        if (window.navigator.userAgent.match(/Tablet/i) || window.navigator.userAgent.match(/iPad/i) || window.navigator.userAgent.match(/Nexus 7/i) || window.navigator.userAgent.match(/Nexus 10/i) || window.navigator.userAgent.match(/KFAPWI/i)) {
+          document.body.className -= ' mobile';
+          document.body.className += ' tablet';
+          return true; //alert('True - Tablet - ' + navigator.userAgent);
+        } else {
+          return false; //alert('False - Tablet - ' + navigator.userAgent);
+        }
+      }
+
+      return userAgentDetect();
+    };
+
+    var isMobile = function isMobile() {
+      if (window.matchMedia("(pointer: coarse)").matches) {
+        if (isTablet() !== true) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+
+      return false;
+    };
+
     var VASTPlayer = function VASTPlayer(domNode) {
       var _this = this;
 
@@ -582,18 +845,22 @@
       var __dataStore = {
         el: domNode,
         videoEl: domNode.querySelector("video"),
-        contentEl: domNode.querySelector(".mirez-conent"),
+        contentEl: domNode.querySelector(".mirez-content"),
         loader: domNode.querySelector(".mirez-loader"),
-        clickArea: domNode.querySelector(".play-icon-area"),
+        landingPageArea: domNode.querySelector(".landing-page-area"),
         playIcon: domNode.querySelector(".play-icon-area"),
         soundIcon: domNode.querySelector(".mirez-sound-area"),
         soundAnimIcon: domNode.querySelectorAll(".mirez-sound-icon"),
+        vpaidArea: domNode.querySelector(".vpaid-area"),
         vastIsParsed: false,
         isFirstStart: true,
         isPlayingAd: false,
         defaultPlaybackRateForAds: 1,
         userEventListeners: {
           adStart: [],
+          adClick: [],
+          adLoaded: [],
+          adError: [],
           firstStart: [],
           play: [],
           pause: [],
@@ -618,11 +885,11 @@
         return __dataStore.loader;
       };
 
-      this.getPlayIcon = function () {
-        return __dataStore.playIcon;
+      this.getLandingPageArea = function () {
+        return __dataStore.landingPageArea;
       };
 
-      this.getClickArea = function () {
+      this.getPlayIcon = function () {
         return __dataStore.playIcon;
       };
 
@@ -634,8 +901,16 @@
         return __dataStore.soundAnimIcon;
       };
 
+      this.getVPaidArea = function () {
+        return __dataStore.vpaidArea;
+      };
+
       this.getHeight = function () {
         return __dataStore.el.offsetHeight;
+      };
+
+      this.getWidth = function () {
+        return __dataStore.el.offsetWidth;
       };
 
       this.getCurrentTime = function () {
@@ -667,6 +942,14 @@
         _this.getSoundAnimIcon()[1].classList.add("none");
 
         _this.getSoundAnimIcon()[2].classList.add("none");
+      };
+
+      this.setSoundOn = function () {
+        return __dataStore.videoEl.muted = true;
+      };
+
+      this.setSoundOff = function () {
+        return __dataStore.videoEl.muted = false;
       }; // Is
 
 
@@ -728,6 +1011,32 @@
         _this.getSoundIcon().classList.remove("hide");
 
         _this.getSoundIcon().classList.add("show");
+      };
+
+      this.hideLandingPageArea = function () {
+        _this.getLandingPageArea().classList.remove("show");
+
+        _this.getLandingPageArea().classList.add("hide");
+      };
+
+      this.showLandingPageArea = function () {
+        _this.getLandingPageArea().classList.remove("hide");
+
+        _this.getLandingPageArea().classList.add("show");
+
+        isMobile() ? _this.getLandingPageArea().classList.add("mobile") : _this.getLandingPageArea().classList.add("desktop");
+      };
+
+      this.hideVPAIDArea = function () {
+        _this.getVPaidArea().classList.remove("show");
+
+        _this.getVPaidArea().classList.add("hide");
+      };
+
+      this.showVPAIDArea = function () {
+        _this.getVPaidArea().classList.remove("hide");
+
+        _this.getVPaidArea().classList.add("show");
       }; // addEventListener
 
 
@@ -762,25 +1071,27 @@
         var playerContent = __dataStore.contentEl;
         playerContent.addEventListener("click", function (evt) {
           evt.preventDefault();
-          var target = evt.target;
           var clicktarget = evt.target;
 
           switch (clicktarget.getAttribute("data-clicktarget")) {
-            case "click-area":
-              break;
-
-            case "play-icon-cell":
+            case "click-play":
               _this2.hidePlayIcon();
 
-              player.play();
-              break;
-
-            case "play-icon":
-              _this2.hidePlayIcon();
+              _this2.showLandingPageArea();
 
               _this2.showSoundIcon();
 
               player.play();
+              break;
+
+            case "click-landing-page":
+              _this2.showPlayIcon();
+
+              _this2.hideLandingPageArea();
+
+              _this2.hideSoundIcon();
+
+              player.pause();
               break;
 
             case "click-sound":
@@ -841,10 +1152,6 @@
 
       pub.Init = function () {
         pub.initVASTPlayer();
-      };
-
-      pub.Test = function () {
-        console.log("tesasdt");
       };
 
       return pub;
