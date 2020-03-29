@@ -1,8 +1,8 @@
+import "./lib/polyfills/foreach.polyfill"
+
 import PlayerFramework from "./PlayerFramework";
-import test from "../lib/test";
 
 (() => {
-    const playerFramework = "PlayerFramework";
+    const playerFramework = "mirezplayer";
     window[playerFramework] = new PlayerFramework();
-    test();
 })();

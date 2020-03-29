@@ -8,7 +8,9 @@
     "build": "webpack",
     "serve": "./node_modules/.bin/serve ./dist",
     "build-js": "./node_modules/.bin/rollup -c",
-    "build-css": "./node_modules/.bin/node-sass scss/app.scss ./dist/mirezplayer.css"
+    "build-css": "./node_modules/.bin/node-sass src/scss/app.scss ./dist/mirezplayer.css",
+    "min-js": "./node_modules/.bin/babel-minify ./dist/mirezplayer.js -o ./dist/mirez-player.min.js",
+    "min-css": "./node_modules/.bin/node-sass ./src/app.scss ./dist/mirez-player.min.css"
   },
   "repository": {
     "type": "git",
@@ -27,11 +29,26 @@
     "babel-preset-env": "^1.7.0",
     "browserify": "^16.5.0",
     "chokidar": "^3.3.1",
-    "grunt": "^1.0.4",
+    "grunt": "^1.1.0",
     "node-sass": "^4.13.1",
     "rollup": "^1.31.1",
     "rollup-plugin-babel": "^4.3.3",
     "rollup-watch": "^4.3.1",
     "serve": "^11.3.0"
+  },
+  "dependencies": {
+    "@babel/cli": "^7.5.5",
+    "@babel/core": "^7.0.1",
+    "@babel/plugin-transform-arrow-functions": "^7.0.0",
+    "@babel/polyfill": "^7.0.0",
+    "@babel/preset-env": "^7.5.5",
+    "@babel/preset-es2015": "^7.0.0-beta.53",
+    "babel-cli": "^6.26.0",
+    "babel-plugin-minify-simplify": "^0.4.3",
+    "babel-plugin-transform-html-import-to-string": "^0.0.1",
+    "babel-preset-minify-es2015": "^0.0.3",
+    "scss": "^0.2.4",
+    "serve": "^11.1.0",
+    "svg-sprite": "^1.5.0"
   }
 }

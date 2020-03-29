@@ -1,0 +1,94 @@
+div.mirez-sound-area{
+  position: absolute;
+  display: flex;
+  width: 6%;
+  height: 10%;
+  bottom: 5%;
+  right: 5%;
+  border-radius: 50%;
+  z-index: 101;
+}
+
+div.mirez-click-area{
+  width: 100%;
+  position: absolute;
+  height: 100%;
+  top: -2px;
+  left: -2px;
+  border-radius: 50%;
+  border: solid 2px #fff;
+  cursor: pointer;
+}
+
+div.mirez-sound-container{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+div.mirez-sound-icon{
+  width: 4px;
+  height: 14px;
+  background-color: white;
+  position: relative;
+}
+
+.mirez-sound-icon.above{
+  animation: animAbove 1s linear 1s infinite alternate-reverse;
+}
+
+
+div.mirez-sound-icon.center{
+  animation: animCenter 0.8s linear 1s infinite alternate-reverse;
+}
+
+div.mirez-sound-icon.below{
+  animation: animBelow 1s linear 1s infinite alternate-reverse;
+}
+
+.mirez-sound-icon.above.none{
+  animation: none !important;
+}
+
+.mirez-sound-icon.center.none{
+   animation: none !important;
+ }
+
+.mirez-sound-icon.below.none{
+  animation: none !important;
+}
+
+
+@keyframes animAbove {
+  0%   {background-color:white; height: 12px;}
+  25%  {background-color:white; height: 8px;}
+  50%  {background-color:white; height: 14px;}
+  75%  {background-color:white; height: 2px;}
+  100% {background-color:white; height: 1px;}
+}
+
+@keyframes animCenter {
+  0%   {background-color:white; height: 6px;}
+  25%  {background-color:white; height: 14px;}
+  50%  {background-color:white; height: 4px;}
+  75%  {background-color:white; height: 2px;}
+  100% {background-color:white; height: 1px;}
+}
+
+@keyframes animBelow {
+  0%   {background-color:white; height: 8px;}
+  25%  {background-color:white; height: 4px;}
+  50%  {background-color:white; height: 2px;}
+  75%  {background-color:white; height: 6px;}
+  100% {background-color:white; height: 14px;}
+}
+
+table.tb-sound{
+  border-spacing: 1px;
+  display: flex;
+  justify-content: center;
+  height: 100%;
+  align-items: center;
+}

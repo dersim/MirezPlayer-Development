@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Title</title>
+</head>
+<body>
+<script>
+
+// replace macro
+
+const replaceURLMacro = function (url) {
+    if (url.indexOf("[TIMESTAMP]") !== -1) {
+        const unix_timestamp = Date.now();
+        // replace macro for unix timestamp
+        url = url.replace("[TIMESTAMP]", unix_timestamp);
+    }
+    if (url.indexOf("%%CACHEBUSTER%%") !== -1) {
+        const unix_timestamp = Date.now();
+        // replace macro for unix timestamp
+        url = url.replace("%%CACHEBUSTER%%", unix_timestamp);
+    }
+    return url;
+}
+
+// AjaxRequest
+
+function StringUtils(str) {
+    str = new String(str);
+    function startsWith(needle) {
+        return str.indexOf(needle) === 0;
+    }
+    return {
+        startsWith: startsWith
+    };
+}
+function AjaxRequest(url, cb, opts) {
+    console.log("2");
+    url = url || false;
+    cb = cb || false;
+    opts = opts || {};
+
+    opts.followRedirects =
+        typeof opts.followRedirects === undefined ? true : opts.followRedirects;
+    if (url === false) return;
+
+    const req = new XMLHttpRequest();
+    req.withCredentials = opts.withCredentials || false;
+    req.requestContentType = opts.requestContentType || null;
+
+    function onReadyStateChangeCallback() {
+        if (req.readyState !== 4) return;
+        const strUtils = StringUtils(req.status);
+        if (strUtils.startsWith(30)) {
+            return new AjaxRequest(url, cb, opts);
+        }
+        if (req.status !== 200) return cb(req, {});
+        cb(false, req);
+    }
+
+    function run() {
+        if (req) {
+            req.open("GET", url, true);
+            req.responseType = opts.responseType || "";
+            console.log("3");
+            console.log(req.onerror);
+            if (cb) {
+                req.onerror = function(e) {
+                    cb(e, {});
+                };
+                req.onreadystatechange = onReadyStateChangeCallback;
+            }
+            req.send();
+        }
+    }
+    run();
+}
+
+// handle AjaxRequestErrors
+
+const handleAjaxRequestErrors = err => {
+    //param.player.HideAdIsPlaying();
+    //Log("error")("TOnlineMediplayer", "VASTParser", "err", err.status); // can be e.g. 404
+    let errorCode;
+    switch (err.status) {
+        case 0:
+        case 4:
+            //Reset();
+            errorCode = 301;
+            // Cache Error Events for HOMAD
+            param.playerDataStore.adErrorsCache.push([
+                null,
+                param.player,
+                "adError",
+                param.playerDataStore,
+                {
+                    vastErrorCode: errorCode,
+                    vastErrorMessage: VASTErrorCodes[errorCode]
+                }
+            ]);
+            param.playerDataStore.userEventListeners.adError.forEach(cb => {
+                cb(null, param.player, "adError", param.playerDataStore, {
+                    vastErrorCode: errorCode,
+                    vastErrorMessage: VASTErrorCodes[errorCode],
+                    rawErrorObject: err
+                });
+            });
+
+            collectedItems.errors.forEach(errUrl => {
+                ErrorTrackingRequest(errUrl, 301);
+            });
+
+            Log("error")(
+                "TOnlineMediplayer",
+                "VASTParser",
+                "VAST-Error",
+                VASTErrorCodes[errorCode],
+                err
+            );
+            break;
+        default:
+            publicMethods.Reset();
+            Log("error")(
+                "TOnlineMediplayer",
+                "VASTParser",
+                "VAST-Error",
+                VASTErrorCodes[900],
+                err
+            );
+            break;
+    }
+};
+
+
+//#######################################################
+
+const Parse = function(xml, url){
+    console.log(xml);
+};
+
+const Read = function(url) {
+    var url = replaceURLMacro(url);
+    console.log("1");
+    new AjaxRequest(
+        url,
+        function(err, res) {
+            console.log("err:" + err);
+            console.log("res: " + res);
+            if (err) {
+                //handleAjaxRequestErrors(err);
+                //opts.onParsingDoneCallback();
+                return;
+            }
+             new Parse(res.responseXML, url);
+        },
+        {
+            requestContentType: "document"
+            // withCredentials: true
+        }
+    );
+}
+
+Read("https://video-adserver.ibillboard.com/getAd?tagid=5803548a-2bce-4756-acad-4af32c4ee057&bust=2108371369&ref=https://www.kicker.de/kicker-tv/videos&key=;cors=yes");
+</script>
+</body>
+</html>

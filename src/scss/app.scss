@@ -1,0 +1,42 @@
+@import 'loader';
+@import 'mirez-content';
+@import 'play-icon';
+@import 'sound-icon';
+@import 'landing-page';
+@import 'VPaidArea';
+
+
+div.mirez-player{
+  background-color: black;
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 100%;
+  box-shadow: 0 0 12px 0 rgba(0,0,0,0.7);
+  border-radius: 1%;
+}
+
+div.mirez-player.ratio-16-9:before{
+  padding-top: 56.25%;
+}
+
+div.mirez-player.fixed-ratio:before{
+  content: "";
+  width: 1px;
+  margin-left: -1px;
+  float: left;
+  height: 0px;
+}
+
+div.mirez-player mirez-conent{
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+div.mirez-player video {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+}
