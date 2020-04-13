@@ -1,13 +1,12 @@
 import replaceURLMacro from "./lib/utils/replaceURLMacro";
 import XMLRequest from "./lib/XMLRequest";
 import Log from "./lib/Log";
-import getNodeValue from "./lib/VAST/getNodeValue";
-import getTrackingEvents from "./lib/VAST/getTrackingEvents";
-import AttachTrackingEventsToPlayer from "./lib/VAST/TrackingEvents/AttachTrackingEventsToPlayer";
-import AttachUserEventsToPlayer from "./lib/VAST/TrackingEvents/AttachUserEventsToPlayer";
+import getNodeValue from "./lib/getNodeValue";
+import getTrackingEvents from "./lib/getTrackingEvents";
+import AttachEventsFromPlayer from "./lib/VAST/AttachEventsFromPlayer";
 import Noop from "./lib/Noop";
-import triggerUEL from "./lib/VAST/triggerUEL";
-import TrackingRequest from "./lib/VAST/TrackingRequest";
+import triggerUEL from "./lib/triggerUEL";
+import TrackingRequest from "./lib/TrackingRequest";
 import VPAIDUtils from "./VPAIDUtils";
 
 
@@ -219,10 +218,8 @@ if(!wrapper){
     });
 
     if(linearAd){
-        AttachUserEventsToPlayer(playerMethod, playerDataStore);
-
         trackingEvents.forEach(te =>{
-            AttachTrackingEventsToPlayer(te, playerMethod, playerDataStore);
+            AttachEventsFromPlayer(te, playerMethod, playerDataStore);
         });
 
         //triggerUEL();

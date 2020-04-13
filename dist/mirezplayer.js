@@ -239,25 +239,173 @@
     };
 
     function OnStartEvent(event) {
-      Log()("TOnlineMediplayer", "VASTParser", "Event", event.name, event.url);
+      Log()("Mirez-Player", "VASTParser", "Event", event.name, event.url);
       TrackingRequest(event.url);
     }
 
-    var AttachTrackingEventsToPlayer = function AttachTrackingEventsToPlayer(events, player) {
-      var videoEl = player.getVideoEl();
+    function OnPauseEvent(event) {
+      Log()("Mirez-Player", "VASTParser", "Event", event.name, event.url);
+      TrackingRequest(event.url);
+    }
+
+    function OnResumeEvent(event) {
+      Log()("Mirez-Player", "VASTParser", "Event", event.name, event.url);
+      TrackingRequest(event.url);
+    }
+
+    function OnCompleteEvent(event) {
+      Log()("Mirez-Player", "VASTParser", "Event", event.name, event.url);
+      TrackingRequest(event.url);
+    }
+
+    function OnFirstQuartileEvent(event) {
+      Log()("Mirez-Player", "VASTParser", "Event", event.name, event.url);
+      TrackingRequest(event.url);
+    }
+
+    function OnThirdQuartileEvent(event) {
+      Log()("Mirez-Player", "VASTParser", "Event", event.name, event.url);
+      TrackingRequest(event.url);
+    }
+
+    function OnMidpointEvent(event) {
+      Log()("Mirez-Player", "VASTParser", "Event", event.name, event.url);
+      TrackingRequest(event.url);
+    }
+
+    var AttachEventsFromPlayer = function AttachEventsFromPlayer(events, playerMethod) {
+      var player = playerMethod.getVideoEl();
       var _timeupdateEvents = [];
       var _cleanup = []; // for each tracking event
 
       events.forEach(function (event) {
         // create a intermediate functions, so we can remove the event listeners right after firing it.
         var _OnStartEvent = function _OnStartEvent() {
-          videoEl.removeEventListener("play", _OnStartEvent);
+          player.removeEventListener("play", _OnStartEvent);
           OnStartEvent(event);
+        };
+
+        var _OnPauseEvent = function _OnPauseEvent() {
+          if (player.currentTime >= player.duration || player.currentTime <= 0) return;
+          OnPauseEvent(event);
+        };
+
+        var _OnResumeEvent = function _OnResumeEvent() {
+          if (player.currentTime <= 0.5) return;
+          OnResumeEvent(event);
+        };
+
+        var _OnCompleteEvent = function _OnCompleteEvent() {
+          OnCompleteEvent(event);
+        };
+
+        var _OnFirstQuartileEvent = function _OnFirstQuartileEvent() {
+          OnFirstQuartileEvent(event);
+        };
+
+        var _OnMidpointEvent = function _OnMidpointEvent() {
+          OnMidpointEvent(event);
+        };
+
+        var _OnThirdQuartileEvent = function _OnThirdQuartileEvent() {
+          OnThirdQuartileEvent(event);
         };
 
         switch (event.name) {
           case "start":
-            videoEl.addEventListener("play", _OnStartEvent);
+            player.addEventListener("play", _OnStartEvent);
+            break;
+
+          case "pause":
+            _cleanup.push({
+              event: "pause",
+              func: _OnPauseEvent
+            });
+
+            player.addEventListener("pause", _OnPauseEvent);
+            break;
+
+          case "resume":
+            _cleanup.push({
+              event: "play",
+              func: _OnResumeEvent
+            });
+
+            player.addEventListener("play", _OnResumeEvent);
+            break;
+
+          case "mute":
+            player.addEventListener("volumechange", function () {
+              if (player.muted === false) {
+                Log()("Mirez-Player", "VASTParser", "Event", event.name, event.url);
+                TrackingRequest(event.url);
+              }
+            });
+            break;
+
+          case "unmute":
+            player.addEventListener("volumechange", function () {
+              if (player.muted === true) {
+                Log()("TOnlineMediplayer", "VASTParser", "Event", event.name, event.url);
+                TrackingRequest(event.url);
+              }
+            });
+            break;
+
+          case "complete":
+            _cleanup.push({
+              event: "ended",
+              func: _OnCompleteEvent
+            });
+
+            player.addEventListener("ended", _OnCompleteEvent);
+            break;
+
+          case "midpoint":
+            _timeupdateEvents.push({
+              callback: _OnMidpointEvent,
+              time: function time() {
+                return player.duration / 2;
+              }
+            });
+
+            break;
+
+          case "firstQuartile":
+            _timeupdateEvents.push({
+              callback: _OnFirstQuartileEvent,
+              time: function time() {
+                return player.duration / 4;
+              }
+            });
+
+            break;
+
+          case "thirdQuartile":
+            _timeupdateEvents.push({
+              callback: _OnThirdQuartileEvent,
+              time: function time() {
+                return player.duration / 4 * 3;
+              }
+            });
+
+            break;
+
+          case "progress":
+            // the offset is based on a percentage value
+            // so we need to calculate the value now
+            if (event.offset.indexOf("%") !== -1) {
+              _timeupdateEvents.push({
+                callback: function callback() {
+                  Log()("Mirez-Player", "VASTParser", "Event", event.name, event.url);
+                  TrackingRequest(event.url);
+                },
+                time: function time() {
+                  return player.duration / 100 * parseInt(event.offset, 10);
+                }
+              });
+            }
+
             break;
         }
       });
@@ -270,7 +418,7 @@
           while (i--) {
             tue = _timeupdateEvents[i];
 
-            if (videoEl.currentTime >= tue.time()) {
+            if (player.currentTime >= tue.time()) {
               tue.callback();
 
               _timeupdateEvents.splice(i, 1);
@@ -279,19 +427,19 @@
         }
       };
 
-      videoEl.addEventListener("timeupdate", _timeupdateEventsTicker);
+      player.addEventListener("timeupdate", _timeupdateEventsTicker);
 
       var _allClean = function _allClean() {
-        videoEl.removeEventListener("timeupdate", _timeupdateEventsTicker);
+        player.removeEventListener("timeupdate", _timeupdateEventsTicker);
 
         _cleanup.forEach(function (clean) {
-          videoEl.removeEventListener(clean.event, clean.func);
+          player.removeEventListener(clean.event, clean.func);
         });
 
-        videoEl.removeEventListener("ended", _allClean);
+        player.removeEventListener("ended", _allClean);
       };
 
-      videoEl.addEventListener("ended", _allClean);
+      player.addEventListener("ended", _allClean);
     };
 
     var triggerUEL = function triggerUEL(player, uel, n, evt) {
@@ -307,29 +455,6 @@
           cb(evt, player, n);
         });
       }
-    };
-
-    var AttachUserEventsToPlayer = function AttachUserEventsToPlayer(player, playerDataStore) {
-      var events = [{
-        name: "start"
-      }];
-      var videoEl = player.getVideoEl();
-      var uel = playerDataStore.userEventListeners;
-
-      events.forEach(function (event) {
-        var _OnStartEvent = function _OnStartEvent() {
-          if (!player.isPlayingAd()) return;
-          if (videoEl.currentTime > 1) return;
-          triggerUEL(player, uel, "adStart");
-        };
-
-        switch (event.name) {
-          case "start":
-
-            videoEl.addEventListener("play", _OnStartEvent);
-            break;
-        }
-      });
     };
 
     var VASTErrorCodes = {
@@ -739,9 +864,8 @@
           });
 
           if (linearAd) {
-            AttachUserEventsToPlayer(playerMethod, playerDataStore);
             trackingEvents.forEach(function (te) {
-              AttachTrackingEventsToPlayer(te, playerMethod);
+              AttachEventsFromPlayer(te, playerMethod);
             }); //triggerUEL();
 
             var videoEl = opts.playerMethod.getVideoEl();
@@ -851,7 +975,7 @@
         landingPageArea: domNode.querySelector(".landing-page-area"),
         playIcon: domNode.querySelector(".play-icon-area"),
         soundIcon: domNode.querySelector(".mirez-sound-area"),
-        soundAnimIcon: domNode.querySelectorAll(".mirez-sound-icon"),
+        soundAnimIcon: domNode.querySelectorAll(".line"),
         vpaidArea: domNode.querySelector(".vpaid-area"),
         vastIsParsed: false,
         isFirstStart: true,
@@ -1035,12 +1159,6 @@
         isMobile() ? _this.getLandingPageArea().classList.add("mobile") : _this.getLandingPageArea().classList.add("desktop");
       };
 
-      this.hideVPAIDArea = function () {
-        _this.getVPaidArea().classList.remove("show");
-
-        _this.getVPaidArea().classList.add("hide");
-      };
-
       this.showVPAIDArea = function () {
         _this.getVPaidArea().classList.remove("hide");
 
@@ -1057,16 +1175,12 @@
           __dataStore.userEventListeners.firstStart.forEach(function (cb) {
             cb(evt, __self, "firstStart");
           });
-
-          console.log("FirstStart");
         }
 
         if (__self.isPlayingAd() !== false && __self.getCurrentTime() > 0) {
           __dataStore.userEventListeners.contentVideoResume.forEach(function (cb) {
             cb(evt, __self, "contentVideoResume");
           });
-
-          console.log("contentVideoResume");
         }
 
         __dataStore.isFirstStart = false;
@@ -1104,17 +1218,21 @@
 
             case "click-sound":
               if (player.muted === true) {
-                player.muted = false;
+                _this2.setSoundOff();
 
                 _this2.setAnimSoundOff();
               } else {
-                player.muted = true;
+                _this2.setSoundOn();
 
                 _this2.setAnimSoundOn();
               }
 
               break;
           }
+        });
+        player.addEventListener("mouseover", function (evt) {//console.log("mouseover");
+        });
+        player.addEventListener("mouseout", function (evt) {//console.log("mouseout");
         });
       }; // Start Parsing VAST Tag
 

@@ -13,82 +13,120 @@ div.mirez-click-area{
   width: 100%;
   position: absolute;
   height: 100%;
-  top: -2px;
-  left: -2px;
-  border-radius: 50%;
-  border: solid 2px #fff;
   cursor: pointer;
 }
 
-div.mirez-sound-container{
-  position: absolute;
-  top: 0;
-  left: 0;
+.mirez-wrapper{
   width: 100%;
   height: 100%;
 }
 
-div.mirez-sound-icon{
-  width: 4px;
-  height: 14px;
-  background-color: white;
-  position: relative;
+.line{
+  width: 6px;
+  height: 10px;
+  margin-left: 12px;
+  margin-top: 9px;
+  position:absolute;
 }
 
-.mirez-sound-icon.above{
-  animation: animAbove 1s linear 1s infinite alternate-reverse;
+.line.left{
+  background-color: #787878;
+  animation: animate1 1.2s linear infinite;
+  top: 16px;
+  left: 0px;
+}
+.line.center{
+  background-color: #787878;
+  animation: animate2 1s linear infinite;
+  top: 16px;
+  left: 8px;
+}
+.line.right{
+  background-color: #787878;
+  animation: animate3 1.5s linear infinite;
+  top: 16px;
+  left: 16px;
 }
 
-
-div.mirez-sound-icon.center{
-  animation: animCenter 0.8s linear 1s infinite alternate-reverse;
-}
-
-div.mirez-sound-icon.below{
-  animation: animBelow 1s linear 1s infinite alternate-reverse;
-}
-
-.mirez-sound-icon.above.none{
+.line.left.none{
   animation: none !important;
+  background-color: #ffffff;
 }
 
-.mirez-sound-icon.center.none{
-   animation: none !important;
- }
-
-.mirez-sound-icon.below.none{
+.line.center.none{
   animation: none !important;
+  background-color: #ffffff;
 }
 
-
-@keyframes animAbove {
-  0%   {background-color:white; height: 12px;}
-  25%  {background-color:white; height: 8px;}
-  50%  {background-color:white; height: 14px;}
-  75%  {background-color:white; height: 2px;}
-  100% {background-color:white; height: 1px;}
+.line.right.none{
+  animation: none !important;
+  background-color: #ffffff;
 }
 
-@keyframes animCenter {
-  0%   {background-color:white; height: 6px;}
-  25%  {background-color:white; height: 14px;}
-  50%  {background-color:white; height: 4px;}
-  75%  {background-color:white; height: 2px;}
-  100% {background-color:white; height: 1px;}
+@keyframes animate1{
+  20%{
+    background-color: white;
+    top: 10px;
+    height: 16px
+  }
+  40%{
+    background-color: white;
+    top: 14px;
+    height: 12px
+  }
+  60%{
+    background-color: white;
+    top: 4px;
+    height: 22px
+  }
+  80%{
+    background-color: white;
+    top: 14px;
+    height: 12px
+  }
 }
 
-@keyframes animBelow {
-  0%   {background-color:white; height: 8px;}
-  25%  {background-color:white; height: 4px;}
-  50%  {background-color:white; height: 2px;}
-  75%  {background-color:white; height: 6px;}
-  100% {background-color:white; height: 14px;}
+@keyframes animate2{
+  20%{
+    background-color: white;
+    top: 5px;
+    height: 21px
+  }
+  40%{
+    background-color: white;
+    top: 14px;
+    height: 12px
+  }
+  60%{
+    background-color: white;
+    top: 5px;
+    height: 21px
+  }
+  80%{
+    background-color: white;
+    top: 10px;
+    height: 16px
+  }
 }
-
-table.tb-sound{
-  border-spacing: 1px;
-  display: flex;
-  justify-content: center;
-  height: 100%;
-  align-items: center;
+@keyframes animate3{
+  20%{
+    background-color: white;
+    top: 5px;
+    height: 21px
+  }
+  40%{
+    background-color: white;
+    top: 14px;
+    height: 12px
+  }
+  60%{
+    background-color: white;
+    top: 10px;
+    height: 16px
+  }
+  80%{
+    background-color: white;
+    top: 14px;
+    height: 12px
+  }
 }
