@@ -1,7 +1,7 @@
 import Log from "./lib/Log";
 import Noop from "./lib/Noop";
 import VASTErrorCodes from "./VASTErrorCodes";
-import TrackingRequest from "./lib/VAST/TrackingRequest";
+import TrackingRequest from "./lib/TrackingRequest";
 
 let VPAIDCreative = null;
 
