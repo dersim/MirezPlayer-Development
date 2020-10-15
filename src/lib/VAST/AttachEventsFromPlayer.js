@@ -105,7 +105,7 @@ const AttachEventsFromPlayer = function(events, playerMethod) {
                 player.addEventListener("volumechange", function() {
                     if(player.muted === true){
                         Log()(
-                            "TOnlineMediplayer",
+                            "Mirez-Player",
                             "VASTParser",
                             "Event",
                             event.name,

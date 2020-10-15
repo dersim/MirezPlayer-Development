@@ -80,7 +80,7 @@ function AjaxRequest(url, cb, opts) {
 
 const handleAjaxRequestErrors = err => {
     //param.player.HideAdIsPlaying();
-    //Log("error")("TOnlineMediplayer", "VASTParser", "err", err.status); // can be e.g. 404
+    //Log("error")("Mirez-Player", "VASTParser", "err", err.status); // can be e.g. 404
     let errorCode;
     switch (err.status) {
         case 0:
@@ -111,7 +111,7 @@ const handleAjaxRequestErrors = err => {
             });
 
             Log("error")(
-                "TOnlineMediplayer",
+                "Mirez-Player",
                 "VASTParser",
                 "VAST-Error",
                 VASTErrorCodes[errorCode],
@@ -121,7 +121,7 @@ const handleAjaxRequestErrors = err => {
         default:
             publicMethods.Reset();
             Log("error")(
-                "TOnlineMediplayer",
+                "Mirez-Player",
                 "VASTParser",
                 "VAST-Error",
                 VASTErrorCodes[900],

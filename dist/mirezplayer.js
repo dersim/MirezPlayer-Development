@@ -168,6 +168,27 @@
       };
     };
 
+    var LogInspector = function LogInspector(text, url) {
+      if (sessionStorage.getItem("MirezPlayerInspector") === null) return Noop;
+      text = text;
+      url = url || "";
+      var date = new Date();
+      var time = date.getHours() + ":" + date.getMinutes() + ":" + addZero(date.getSeconds());
+      var event = document.getElementsByClassName("tabcontent")[0].children[0].children[0];
+      var li = document.createElement("li");
+      var liText = document.createTextNode(time + " " + text + " " + url);
+      li.appendChild(liText);
+      event.appendChild(li);
+
+      function addZero(i) {
+        if (i < 10) {
+          i = "0" + i;
+        }
+
+        return i;
+      }
+    };
+
     var getNodeValue = function getNodeValue(node) {
       return node.nodeValue || node.textContent;
     };
@@ -346,7 +367,7 @@
           case "unmute":
             player.addEventListener("volumechange", function () {
               if (player.muted === true) {
-                Log()("TOnlineMediplayer", "VASTParser", "Event", event.name, event.url);
+                Log()("Mirez-Player", "VASTParser", "Event", event.name, event.url);
                 TrackingRequest(event.url);
               }
             });
@@ -674,6 +695,7 @@
         impressions: [],
         creatives: []
       };
+      var iCount = 0;
 
       method.Reset = function () {
         trackingEvents = [];
@@ -777,10 +799,32 @@
 
         var trackingEventsNodes = xmlDoc.querySelectorAll("TrackingEvents Tracking");
 
+        if (sessionStorage.getItem("MirezPlayerInspector") !== null) {
+          //XML Document
+          var number = ['1st', '2nd', '3nd', '4th', '5th', '6th', '7th', '8th', '9th', '10'];
+          var button = document.createElement("button");
+          var text1 = document.createTextNode("" + number[iCount] + "");
+          iCount !== 0 ? button.className = "tablinks-2" : button.className = "tablinks-2 active";
+          button.setAttribute("onclick", "switchTab(event,'" + number[iCount] + "')");
+          var textarea1 = document.createElement("textarea");
+          textarea1.id = "" + number[iCount] + "";
+          textarea1.className = "xml-text";
+          iCount !== 0 ? textarea1.setAttribute("style", "display:none") : textarea1.setAttribute("style", "display:block");
+          textarea1.wrap = "off";
+          textarea1.spellcheck = "false";
+          textarea1.value = "Request URL: " + url + "\n\n" + "Response:\n" + new XMLSerializer().serializeToString(xmlDoc) + "";
+          button.appendChild(text1);
+          document.getElementsByClassName("tab2")[0].appendChild(button);
+          document.getElementsByClassName("textarea")[0].appendChild(textarea1);
+          iCount++;
+        }
+
         if (xml !== null) {
           var i = __dataStore.maxRedirect--;
           Log()("Mirez-Player", "VASTParser", i + " VAST URL: ", url);
           Log()("Mirez-Player", "VASTParser", "VAST Document:", xml.cloneNode(true));
+          LogInspector("Wrapper: ", i);
+          LogInspector("Requested VAST URL: ", url);
         } else {
           method.Reset();
         }
@@ -890,6 +934,24 @@
             }
 
             opts.playerMethod.showAdIsPlaying("preroll");
+
+            if (sessionStorage.getItem("MirezPlayerInspector") !== null) {
+              //Selected Media File
+              var hTag = document.createElement("h4");
+              var text2 = document.createTextNode("Media Source:");
+              hTag.appendChild(text2);
+              var textarea2 = document.createElement("textarea");
+              textarea2.className = "pTag";
+              textarea2.spellcheck = false;
+              textarea2.setAttribute("style", "width:100%; height:63px");
+              textarea2.value = "" + mediaFile.src + "";
+              var table = document.createElement("table");
+              table.style.width = "100%";
+              table.innerHTML = "<tbody style='width: 100%'><tr><td>Type:</td><td>Width:</td><td>Height:</td><td>Bitrate:</td></tr><tr><td>" + mediaFile.type + "</td><td>" + mediaFile.width + "</td><td>" + mediaFile.height + "</td><td>" + mediaFile.bitrate + "</td></tr></tbody>";
+              document.getElementsByClassName("media-view")[0].appendChild(hTag);
+              document.getElementsByClassName("media-view")[0].appendChild(textarea2);
+              document.getElementsByClassName("media-view")[0].appendChild(table);
+            }
           }
 
           return;
