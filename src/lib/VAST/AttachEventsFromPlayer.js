@@ -1,39 +1,47 @@
 import TrackingRequest from "../TrackingRequest";
 import Log from "../Log";
+import LogInspector from "../LogInspector";
 
 
 function OnStartEvent(event) {
     Log()("Mirez-Player", "VASTParser", "Event", event.name, event.url);
+    LogInspector(event.name + ": ", event.url);
     TrackingRequest(event.url);
 }
 
 function OnPauseEvent(event) {
     Log()("Mirez-Player", "VASTParser", "Event", event.name, event.url);
+    LogInspector(event.name + ": ", event.url);
     TrackingRequest(event.url);
 }
 
 function OnResumeEvent(event) {
     Log()("Mirez-Player", "VASTParser", "Event", event.name, event.url);
+    LogInspector(event.name + ": ", event.url);
     TrackingRequest(event.url);
 }
 
 function OnCompleteEvent(event) {
     Log()("Mirez-Player", "VASTParser", "Event", event.name, event.url);
+    LogInspector(event.name + ": ", event.url);
     TrackingRequest(event.url);
 }
 
 function OnFirstQuartileEvent(event) {
     Log()("Mirez-Player", "VASTParser", "Event", event.name, event.url);
+    LogInspector(event.name + ": ", event.url);
     TrackingRequest(event.url);
 }
 
 function OnThirdQuartileEvent(event) {
     Log()("Mirez-Player", "VASTParser", "Event", event.name, event.url);
+    LogInspector(event.name + ": ", event.url);
     TrackingRequest(event.url);
 }
 
 function OnMidpointEvent(event) {
     Log()("Mirez-Player", "VASTParser", "Event", event.name, event.url);
+    LogInspector(event.name + ": ", event.url);
     TrackingRequest(event.url);
 }
 
@@ -90,13 +98,8 @@ const AttachEventsFromPlayer = function(events, playerMethod) {
             case "mute":
                 player.addEventListener("volumechange", function() {
                     if(player.muted === false) {
-                        Log()(
-                            "Mirez-Player",
-                            "VASTParser",
-                            "Event",
-                            event.name,
-                            event.url
-                        );
+                        Log()("Mirez-Player", "VASTParser", "Event", event.name, event.url);
+                        LogInspector(event.name + ": ", event.url);
                         TrackingRequest(event.url);
                     }
                 });
@@ -104,13 +107,8 @@ const AttachEventsFromPlayer = function(events, playerMethod) {
             case "unmute":
                 player.addEventListener("volumechange", function() {
                     if(player.muted === true){
-                        Log()(
-                            "Mirez-Player",
-                            "VASTParser",
-                            "Event",
-                            event.name,
-                            event.url
-                        );
+                        Log()("Mirez-Player", "VASTParser", "Event", event.name, event.url);
+                        LogInspector(event.name + ": ", event.url);
                         TrackingRequest(event.url);
                     }
                 });
@@ -152,13 +150,8 @@ const AttachEventsFromPlayer = function(events, playerMethod) {
                 if (event.offset.indexOf("%") !== -1) {
                     _timeupdateEvents.push({
                         callback: function() {
-                            Log()(
-                                "Mirez-Player",
-                                "VASTParser",
-                                "Event",
-                                event.name,
-                                event.url
-                            );
+                            Log()("Mirez-Player", "VASTParser", "Event", event.name, event.url);
+                            LogInspector(event.name + ": ", event.url);
                             TrackingRequest(event.url);
                         },
                         time: function() {

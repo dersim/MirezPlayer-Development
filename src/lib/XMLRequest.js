@@ -1,3 +1,5 @@
+import LogInspector from "./LogInspector";
+
 function StringUtils(str) {
     str = new String(str);
     function startsWith(needle) {
@@ -33,10 +35,14 @@ function XMLRequest(url, cb, opts) {
         if (req) {
             req.open("GET", url, true);
             req.timeout = 2000;
-            req.ontimeout = function(e){ console.log("timeout")}
+            req.ontimeout = function(e){
+                console.log("timeout");
+                LogInspector("Timeout of VAST URI: ", url);
+            }
             req.responseType = opts.responseType || "";
             if (cb) {
                 req.onerror = function(e) {
+                    LogInspector("VAST URI is incorrect: " + url);
                     cb(e, {});
                 };
                 req.onreadystatechange = onReadyStateChangeCallback;

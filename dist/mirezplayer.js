@@ -51,6 +51,34 @@
       return _typeof(obj);
     }
 
+    var Noop = function Noop() {};
+
+    var zCount = 0;
+
+    var LogInspector = function LogInspector(text, url) {
+      if (sessionStorage.getItem("MirezPlayerInspector") === null) return Noop;
+      text = text;
+      url = url || "";
+      var date = new Date();
+      var time = addZero(date.getHours()) + ":" + addZero(date.getMinutes()) + ":" + addZero(date.getSeconds());
+      var event = document.getElementsByClassName("tabcontent")[0].children[0].children[0];
+      var li = document.createElement("li");
+      if (zCount % 2 == 0) li.style.background = "#c1c1c1";
+      var liText = document.createTextNode(time + " " + text + " " + url);
+      li.appendChild(liText);
+      event.appendChild(li);
+
+      function addZero(i) {
+        if (i < 10) {
+          i = "0" + i;
+        }
+
+        return i;
+      }
+
+      zCount++;
+    };
+
     function StringUtils(str) {
       str = new String(str);
 
@@ -92,12 +120,14 @@
 
           req.ontimeout = function (e) {
             console.log("timeout");
+            LogInspector("Timeout of VAST URI: ", url);
           };
 
           req.responseType = opts.responseType || "";
 
           if (cb) {
             req.onerror = function (e) {
+              LogInspector("VAST URI is incorrect: " + url);
               cb(e, {});
             };
 
@@ -110,8 +140,6 @@
 
       run();
     }
-
-    var Noop = function Noop() {};
 
     var isIE11 = !!window.MSInputMethodContext && !!document.documentMode;
 
@@ -166,27 +194,6 @@
           (_window$console2 = window.console).log.apply(_window$console2, ["%c" + desc, "color:" + c.fg + ";background:" + c.bg + ";"].concat(logs));
         }
       };
-    };
-
-    var LogInspector = function LogInspector(text, url) {
-      if (sessionStorage.getItem("MirezPlayerInspector") === null) return Noop;
-      text = text;
-      url = url || "";
-      var date = new Date();
-      var time = date.getHours() + ":" + date.getMinutes() + ":" + addZero(date.getSeconds());
-      var event = document.getElementsByClassName("tabcontent")[0].children[0].children[0];
-      var li = document.createElement("li");
-      var liText = document.createTextNode(time + " " + text + " " + url);
-      li.appendChild(liText);
-      event.appendChild(li);
-
-      function addZero(i) {
-        if (i < 10) {
-          i = "0" + i;
-        }
-
-        return i;
-      }
     };
 
     var getNodeValue = function getNodeValue(node) {
@@ -261,36 +268,43 @@
 
     function OnStartEvent(event) {
       Log()("Mirez-Player", "VASTParser", "Event", event.name, event.url);
+      LogInspector(event.name + ": ", event.url);
       TrackingRequest(event.url);
     }
 
     function OnPauseEvent(event) {
       Log()("Mirez-Player", "VASTParser", "Event", event.name, event.url);
+      LogInspector(event.name + ": ", event.url);
       TrackingRequest(event.url);
     }
 
     function OnResumeEvent(event) {
       Log()("Mirez-Player", "VASTParser", "Event", event.name, event.url);
+      LogInspector(event.name + ": ", event.url);
       TrackingRequest(event.url);
     }
 
     function OnCompleteEvent(event) {
       Log()("Mirez-Player", "VASTParser", "Event", event.name, event.url);
+      LogInspector(event.name + ": ", event.url);
       TrackingRequest(event.url);
     }
 
     function OnFirstQuartileEvent(event) {
       Log()("Mirez-Player", "VASTParser", "Event", event.name, event.url);
+      LogInspector(event.name + ": ", event.url);
       TrackingRequest(event.url);
     }
 
     function OnThirdQuartileEvent(event) {
       Log()("Mirez-Player", "VASTParser", "Event", event.name, event.url);
+      LogInspector(event.name + ": ", event.url);
       TrackingRequest(event.url);
     }
 
     function OnMidpointEvent(event) {
       Log()("Mirez-Player", "VASTParser", "Event", event.name, event.url);
+      LogInspector(event.name + ": ", event.url);
       TrackingRequest(event.url);
     }
 
@@ -359,6 +373,7 @@
             player.addEventListener("volumechange", function () {
               if (player.muted === false) {
                 Log()("Mirez-Player", "VASTParser", "Event", event.name, event.url);
+                LogInspector(event.name + ": ", event.url);
                 TrackingRequest(event.url);
               }
             });
@@ -368,6 +383,7 @@
             player.addEventListener("volumechange", function () {
               if (player.muted === true) {
                 Log()("Mirez-Player", "VASTParser", "Event", event.name, event.url);
+                LogInspector(event.name + ": ", event.url);
                 TrackingRequest(event.url);
               }
             });
@@ -419,6 +435,7 @@
               _timeupdateEvents.push({
                 callback: function callback() {
                   Log()("Mirez-Player", "VASTParser", "Event", event.name, event.url);
+                  LogInspector(event.name + ": ", event.url);
                   TrackingRequest(event.url);
                 },
                 time: function time() {
@@ -761,6 +778,7 @@
             }
           });
           Log()("Mirez-Player", "VASTParser", "Selected media file:", mediaFile);
+          LogInspector("Ads loaded");
           return mediaFile;
         };
 
@@ -822,9 +840,8 @@
         if (xml !== null) {
           var i = __dataStore.maxRedirect--;
           Log()("Mirez-Player", "VASTParser", i + " VAST URL: ", url);
-          Log()("Mirez-Player", "VASTParser", "VAST Document:", xml.cloneNode(true));
-          LogInspector("Wrapper: ", i);
-          LogInspector("Requested VAST URL: ", url);
+          Log()("Mirez-Player", "VASTParser", "VAST Document:", xml.cloneNode(true)); //LogInspector("Wrapper: ", i);
+          //LogInspector("Requested VAST URL: ", url);
         } else {
           method.Reset();
         }
@@ -894,9 +911,11 @@
 
                 ClickTrackings.forEach(function (ct) {
                   Log()("Mirez-Player", "VASTParser", "ClickTracking", ct);
+                  LogInspector("ClickTracking: ", ct);
                   TrackingRequest(ct);
                 });
                 Log()("Mirez-Player", "VASTParser", "ClickThrough", _ClickThrough);
+                LogInspector("ClickTrough: " + _ClickThrough);
                 window.open(getNodeValue(_ClickThrough));
               };
 
@@ -923,6 +942,7 @@
 
               collectedItems.impressions.forEach(function (imp) {
                 Log()("Mirez-Player", "VASTParser", "Impression fired", imp);
+                LogInspector("Impression Pixel: ", imp);
                 TrackingRequest(imp);
               });
               Log()("Mirez-Player", "VASTParser", "Collected Items:", collectedItems);
@@ -930,7 +950,14 @@
             } else {
               videoEl.src = mediaFile.src;
               opts.playerMethod.hideLoader();
-              opts.playerMethod.showPlayIcon();
+              opts.playerMethod.showPlayIcon(); // fire impression tracking pixels
+
+              collectedItems.impressions.forEach(function (imp) {
+                Log()("Mirez-Player", "VASTParser", "Impression fired", imp);
+                LogInspector("Impression Pixel: ", imp);
+                TrackingRequest(imp);
+              });
+              Log()("Mirez-Player", "VASTParser", "Collected Items:", collectedItems);
             }
 
             opts.playerMethod.showAdIsPlaying("preroll");
@@ -969,8 +996,10 @@
         var URL = replaceURLMacro(url);
         new XMLRequest(URL, function (err, res) {
           if (err) {
+            opts.playerMethod.hideLoader(); //LogInspector("Ad error: There was a problem requesting ads from the server.");
             //handleAjaxRequestErrors(err);
             //opts.onParsingDoneCallback();
+
             return;
           }
 
@@ -1291,6 +1320,9 @@
 
               break;
           }
+        });
+        player.addEventListener("ended", function (_evt) {
+          _this2.hideSoundIcon();
         });
         player.addEventListener("mouseover", function (evt) {//console.log("mouseover");
         });

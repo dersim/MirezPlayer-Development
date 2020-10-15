@@ -94,6 +94,7 @@ const GetMediaFileClosestTo = (k, value) => {
         }
     });
     Log()("Mirez-Player","VASTParser","Selected media file:", mediaFile);
+    LogInspector("Ads loaded");
     return mediaFile;
 };
 
@@ -162,6 +163,7 @@ if(xml !== null){
 }else{
     method.Reset();
     errorCode = 301;
+}
 
 if(!xmlDoc){
     errorCode = 303;
@@ -232,9 +234,11 @@ if(!wrapper){
                 }
                 ClickTrackings.forEach(ct => {
                     Log()("Mirez-Player","VASTParser", "ClickTracking", ct);
+                    LogInspector("ClickTracking: ", ct);
                     TrackingRequest(ct);
                 });
                 Log()("Mirez-Player","VASTParser", "ClickThrough", _ClickThrough);
+                LogInspector("ClickTrough: " + _ClickThrough);
                 window.open(getNodeValue(_ClickThrough));
             };
             clickLandingPageArea.addEventListener("click", clickTroughFunc);
@@ -267,6 +271,7 @@ if(!wrapper){
             // fire impression tracking pixels
             collectedItems.impressions.forEach(imp => {
                 Log()("Mirez-Player", "VASTParser", "Impression fired", imp);
+                LogInspector("Impression Pixel: ", imp);
                 TrackingRequest(imp);
             });
             Log()("Mirez-Player","VASTParser","Collected Items:",collectedItems);
@@ -275,6 +280,14 @@ if(!wrapper){
             videoEl.src = mediaFile.src;
             opts.playerMethod.hideLoader();
             opts.playerMethod.showPlayIcon();
+
+            // fire impression tracking pixels
+            collectedItems.impressions.forEach(imp => {
+                Log()("Mirez-Player", "VASTParser", "Impression fired", imp);
+                LogInspector("Impression Pixel: ", imp);
+                TrackingRequest(imp);
+            });
+            Log()("Mirez-Player","VASTParser","Collected Items:",collectedItems);
         }
         opts.playerMethod.showAdIsPlaying("preroll");
 
@@ -317,6 +330,8 @@ new XMLRequest(
     URL,
     function(err, res) {
         if (err) {
+            opts.playerMethod.hideLoader();
+            //LogInspector("Ad error: There was a problem requesting ads from the server.");
             //handleAjaxRequestErrors(err);
             //opts.onParsingDoneCallback();
             return;

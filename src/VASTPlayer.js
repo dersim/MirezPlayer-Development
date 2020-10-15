@@ -175,6 +175,10 @@ playerContent.addEventListener("click", evt =>{
     }
 });
 
+player.addEventListener("ended", _evt =>{
+    this.hideSoundIcon();
+});
+
 player.addEventListener("mouseover", evt =>{
     //console.log("mouseover");
 });
